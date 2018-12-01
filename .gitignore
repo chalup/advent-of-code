@@ -1,0 +1,16 @@
+*.iml
+.gradle
+
+.idea/workspace.xml
+.idea/usage.statistics.xml
+.idea/tasks.xml
+
+.idea/libraries
+.idea/modules.xml
+.idea/gradle.xml
+
+.DS_Store
+
+build
+out
+
