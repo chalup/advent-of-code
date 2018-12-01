@@ -3,6 +3,7 @@ package org.chalup.advent2018
 import com.google.common.truth.Truth
 import org.chalup.advent2018.Day1.calculateFinalFrequency
 import org.chalup.advent2018.Day1.detectCycle
+import org.chalup.advent2018.Day1.functionalDetectCycle
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.Arguments.arguments
@@ -19,6 +20,12 @@ class Day1Test {
     @MethodSource("part2TestData")
     fun `should detect correct frequency cycle`(input: List<String>, expectedResult: Int) {
         Truth.assertThat(detectCycle(input)).isEqualTo(expectedResult)
+    }
+
+    @ParameterizedTest
+    @MethodSource("part2TestData")
+    fun `should detect correct frequency cycle in functional manner`(input: List<String>, expectedResult: Int) {
+        Truth.assertThat(functionalDetectCycle(input)).isEqualTo(expectedResult)
     }
 
     companion object {

@@ -22,4 +22,21 @@ object Day1 {
             forEach(block)
         }
     }
+
+    data class FrequencyChanges(val currentFrequency: Int = 0,
+                                val previousFrequencies: Set<Int> = emptySet()) {
+        operator fun plus(change: Int) = FrequencyChanges(
+            currentFrequency + change,
+            previousFrequencies + currentFrequency
+        )
+    }
+
+    fun functionalDetectCycle(changes: List<String>): Int = changes
+        .map { it.toInt() }
+        .cycle()
+        .scan(FrequencyChanges()) { frequencyChanges, change -> frequencyChanges + change }
+        .asSequence()
+        .dropWhile { it.currentFrequency !in it.previousFrequencies }
+        .first()
+        .currentFrequency
 }
