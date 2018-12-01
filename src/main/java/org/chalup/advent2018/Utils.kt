@@ -16,3 +16,23 @@ fun <T> Collection<T>.cycle(): Iterable<T> = object : Iterable<T> {
         }
     }
 }
+
+fun <T, R> Iterable<T>.scan(initial: R, operation: (R, T) -> R) = object : Iterable<R> {
+    override fun iterator() = object : Iterator<R> {
+        val scannedIterator = this@scan.iterator()
+        var initialEmitted = false
+        var accumulator = initial
+
+        override fun hasNext() = !initialEmitted || scannedIterator.hasNext()
+
+        override fun next(): R {
+            if (!initialEmitted) {
+                initialEmitted = true
+            } else {
+                accumulator = operation(accumulator, scannedIterator.next())
+            }
+
+            return accumulator
+        }
+    }
+}

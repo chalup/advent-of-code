@@ -26,4 +26,12 @@ class UtilsTest {
     fun `should fail to take an element from empty cycle`() {
         assertThrows<NoSuchElementException> { emptyList<Int>().cycle().iterator().next() }
     }
+
+    @Test
+    fun `should scan through the collection`() {
+        assertThat((1..4).asIterable().scan(0) { a, b -> a + b })
+            .containsExactlyElementsIn(listOf(0, 1, 3, 6, 10))
+            .inOrder()
+
+    }
 }
