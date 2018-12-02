@@ -1,7 +1,8 @@
 package org.chalup.advent2018
 
 import com.google.common.truth.Truth
-import org.chalup.advent2018.Day2.BoxIdCategory.*
+import org.chalup.advent2018.Day2.BoxIdCategory.DOUBLE
+import org.chalup.advent2018.Day2.BoxIdCategory.TRIPLE
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
@@ -25,6 +26,19 @@ class Day2Test {
                            "ababab")
 
         Truth.assertThat(Day2.checksum(input)).isEqualTo(12)
+    }
+
+    @Test
+    fun `should find correct boxes with prototype fabric`() {
+        val input = listOf("abcde",
+                           "fghij",
+                           "klmno",
+                           "pqrst",
+                           "fguij",
+                           "axcye",
+                           "wvxyz")
+
+        Truth.assertThat(Day2.commonLettersOfMatchingBoxes(input)).isEqualTo("fgij")
     }
 
     companion object {
