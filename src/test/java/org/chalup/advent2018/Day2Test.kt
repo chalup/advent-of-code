@@ -30,15 +30,12 @@ class Day2Test {
 
     @Test
     fun `should find correct boxes with prototype fabric`() {
-        val input = listOf("abcde",
-                           "fghij",
-                           "klmno",
-                           "pqrst",
-                           "fguij",
-                           "axcye",
-                           "wvxyz")
+        Truth.assertThat(Day2.commonLettersOfMatchingBoxes(part2Input)).isEqualTo("fgij")
+    }
 
-        Truth.assertThat(Day2.commonLettersOfMatchingBoxes(input)).isEqualTo("fgij")
+    @Test
+    fun `should quickly find correct boxes with prototype fabric`() {
+        Truth.assertThat(Day2.efficientCommonLettersOfMatchingBoxes(part2Input)).isEqualTo("fgij")
     }
 
     companion object {
@@ -49,6 +46,13 @@ class Day2Test {
             Arguments.arguments("bababc", listOf(DOUBLE, TRIPLE)),
             Arguments.arguments("abbcde", listOf(DOUBLE))
         )
-    }
 
+        val part2Input = listOf("abcde",
+                                "fghij",
+                                "klmno",
+                                "pqrst",
+                                "fguij",
+                                "axcye",
+                                "wvxyz")
+    }
 }

@@ -40,4 +40,17 @@ object Day2 {
             .pairs()
             .first { (one, other) -> idsMatch(one, other) }
             .let { (one, other) -> commonPart(one, other) }
+
+    fun efficientCommonLettersOfMatchingBoxes(input: List<String>): String =
+        input
+            .first()
+            .indices
+            .flatMap { index ->
+                input
+                    .groupingBy { it.toMutableList().apply { removeAt(index) }.joinToString("") }
+                    .eachCount()
+                    .filter { (_, count) -> count == 2 }
+                    .keys
+            }
+            .first()
 }
