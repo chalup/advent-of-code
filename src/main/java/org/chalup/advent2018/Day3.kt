@@ -26,4 +26,24 @@ object Day3 {
             .groupingBy { it.x to it.y }
             .eachCount()
             .count { (_, claims) -> claims > 1 }
+
+    fun findNonOverlappingClaim(claims: List<String>): Int =
+        claims
+            .map { parseClaim(it) }
+            .flatMap { it.allClaimedCoords() }
+            .groupBy { it.x to it.y }
+            .values
+            .map { claimsGroup -> claimsGroup.map { it.claimId }.toSet() }
+            .let { claimsGroups ->
+                val overlappingClaims = claimsGroups
+                    .filter { it.size > 1 }
+                    .flatten()
+                    .toSet()
+
+                claimsGroups
+                    .filter { it.intersect(overlappingClaims).isEmpty() }
+                    .flatten()
+                    .toSet()
+                    .single()
+            }
 }
