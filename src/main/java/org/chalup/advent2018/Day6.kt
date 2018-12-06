@@ -25,14 +25,17 @@ object Day6 {
         return Bounds(minX, minY, maxX, maxY)
     }
 
-    private fun Bounds.extendBy(amount: Int) = copy(minX = minX - amount,
-                                                    minY = minY - amount,
-                                                    maxX = maxX + amount,
-                                                    maxY = maxY + amount)
-
     private fun Bounds.points() = ((minX..maxX) * (minY..maxY)).map { (x, y) -> Point(x, y) }
 
-    private operator fun Bounds.contains(point: Point) = with(point) { (x in minX..maxX) && (y in minY..maxY) }
+    private infix fun Point.isOnTheEdgeOf(bounds: Bounds) = with(bounds) {
+        when {
+            x == minX -> true
+            x == maxX -> true
+            y == minY -> true
+            y == maxY -> true
+            else -> false
+        }
+    }
 
     fun findLargestFiniteArea(input: List<String>): Int = input
         .map { parse(it) }
@@ -40,7 +43,6 @@ object Day6 {
             val bounds = areas.bounds()
 
             bounds
-                .extendBy(1)
                 .points()
                 .groupBy { point ->
                     areas
@@ -49,7 +51,7 @@ object Day6 {
                         .let { (_, areas) -> areas.singleOrNull() }
                 }
                 .filterKeys { it != null }
-                .filter { (_, points) -> points.all { it in bounds } }
+                .filter { (_, points) -> points.none { it isOnTheEdgeOf bounds } }
                 .map { (_, points) -> points.size }
                 .max()!!
         }
