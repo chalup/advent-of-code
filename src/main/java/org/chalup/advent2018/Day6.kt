@@ -1,14 +1,12 @@
 package org.chalup.advent2018
 
+import org.chalup.utils.Point
+import org.chalup.utils.Rect
+import org.chalup.utils.isOnTheEdgeOf
+import org.chalup.utils.points
 import java.lang.Math.abs
 
 object Day6 {
-    private data class Point(val x: Int, val y: Int)
-    private data class Bounds(val minX: Int,
-                              val minY: Int,
-                              val maxX: Int,
-                              val maxY: Int)
-
     private class Area(val origin: Point)
 
     private fun manhattanDistance(a: Point, b: Point) = abs(a.x - b.x) + abs(a.y - b.y)
@@ -16,25 +14,11 @@ object Day6 {
     private fun parse(input: String): Area =
         input.split(",").map { it.trim().toInt() }.let { (x, y) -> Area(Point(x, y)) }
 
-    private operator fun <T, U> Iterable<T>.times(other: Iterable<U>) = flatMap { t -> other.map { u -> t to u } }
-
-    private fun Iterable<Area>.bounds(): Bounds {
+    private fun Iterable<Area>.bounds(): Rect {
         val (minX, maxX) = map { it.origin.x }.let { it.min()!! to it.max()!! }
         val (minY, maxY) = map { it.origin.y }.let { it.min()!! to it.max()!! }
 
-        return Bounds(minX, minY, maxX, maxY)
-    }
-
-    private fun Bounds.points() = ((minX..maxX) * (minY..maxY)).map { (x, y) -> Point(x, y) }
-
-    private infix fun Point.isOnTheEdgeOf(bounds: Bounds) = with(bounds) {
-        when {
-            x == minX -> true
-            x == maxX -> true
-            y == minY -> true
-            y == maxY -> true
-            else -> false
-        }
+        return Rect(minX, minY, maxX, maxY)
     }
 
     fun findLargestFiniteArea(input: List<String>): Int = input
