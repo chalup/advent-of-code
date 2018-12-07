@@ -6,6 +6,13 @@ data class Rect(val topLeft: Point, val bottomRight: Point) {
                                                                      Point(right, bottom))
 }
 
+operator fun Rect.contains(point: Point) = with(point) {
+    val (minX, minY) = topLeft
+    val (maxX, maxY) = bottomRight
+
+    (x in minX..maxX) && (y in minY..maxY)
+}
+
 fun Rect.points() = ((topLeft.x..bottomRight.x) * (topLeft.y..bottomRight.y)).map { (x, y) -> Point(x, y) }
 
 infix fun Point.isOnTheEdgeOf(bounds: Rect) = with(bounds) {
