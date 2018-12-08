@@ -24,7 +24,9 @@ test {
 
 compileKotlin {
     kotlinOptions.jvmTarget = "1.8"
+    kotlinOptions.freeCompilerArgs = ['-Xuse-experimental=kotlin.ExperimentalUnsignedTypes']
 }
 compileTestKotlin {
     kotlinOptions.jvmTarget = "1.8"
+    kotlinOptions.freeCompilerArgs = ['-Xuse-experimental=kotlin.ExperimentalUnsignedTypes']
 }
