@@ -9,7 +9,7 @@ import org.junit.jupiter.params.provider.MethodSource
 class Day9Test {
     @ParameterizedTest
     @MethodSource("gameParams")
-    fun `should calculate high score`(players: Int, marbles: Int, highScore: Int) {
+    fun `should calculate high score`(players: Int, marbles: Long, highScore: Long) {
         assertThat(Day9.calculateHighScore(players, marbles)).isEqualTo(highScore)
     }
 

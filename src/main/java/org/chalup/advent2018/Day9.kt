@@ -1,33 +1,33 @@
 package org.chalup.advent2018
 
+import java.lang.Math.abs
 import java.util.LinkedList
 
 object Day9 {
-    fun calculateHighScore(players: Int, marbles: Int): Int {
-        val scores = MutableList(players) { 0 }
+    fun calculateHighScore(players: Int, marbles: Long): Long {
+        val scores: LinkedList<Long> = LinkedList<Long>().apply { repeat(players) { addFirst(0) } }
+        val board: LinkedList<Long> = LinkedList<Long>().apply { add(0) }
 
-        var activePlayer = 0
-        val board: MutableList<Int> = LinkedList<Int>().apply { add(0) }
-        var currentMarblePosition = 0
-
-        fun marblePosition(delta: Int) =
-            (currentMarblePosition + delta + board.size) % board.size
+        fun <T> LinkedList<T>.rotate(delta: Int) = repeat(abs(delta)) {
+            if (delta > 0) {
+                board.addLast(board.removeFirst())
+            } else {
+                board.addFirst(board.removeLast())
+            }
+        }
 
         for (marble in 1..marbles) {
-            if (marble % 10_000 == 0) println("Marble $marble out of $marbles")
-
-            if (marble % 23 != 0) {
-                val newMarblePosition = marblePosition(delta = 2)
-                board.add(newMarblePosition, marble)
-                currentMarblePosition = newMarblePosition
+            if (marble % 23 != 0L) {
+                board.rotate(2)
+                board.addFirst(marble)
+                scores.addLast(scores.removeFirst())
             } else {
-                val removedMarblePosition = marblePosition(delta = -7)
-                scores[activePlayer] += marble
-                scores[activePlayer] += board.removeAt(removedMarblePosition)
-                currentMarblePosition = removedMarblePosition
+                board.rotate(-7)
+                var activePlayerScore = scores.removeFirst()
+                activePlayerScore += marble
+                activePlayerScore += board.removeFirst()
+                scores.addLast(activePlayerScore)
             }
-
-            activePlayer = (activePlayer + 1) % players
         }
 
         return scores.max()!!
