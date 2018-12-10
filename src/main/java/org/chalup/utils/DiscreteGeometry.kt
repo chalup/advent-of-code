@@ -4,6 +4,9 @@ data class Point(val x: Int, val y: Int)
 data class Rect(val topLeft: Point, val bottomRight: Point) {
     constructor(left: Int, top: Int, right: Int, bottom: Int) : this(Point(left, top),
                                                                      Point(right, bottom))
+
+    val width = bottomRight.x - topLeft.x + 1
+    val height = bottomRight.y - topLeft.y + 1
 }
 
 operator fun Rect.contains(point: Point) = with(point) {
