@@ -2,6 +2,8 @@ package org.chalup.utils
 
 import kotlin.text.MatchResult.Destructured
 
+fun Regex.matchOrThrow(text: String): MatchResult = matchEntire(text) ?: throw IllegalArgumentException("Can't parse [$text] with [$this]'")
+
 inline fun <T : Any> match(input: String, block: Matcher<T>.() -> Unit): T = Matcher<T>(input).apply(block).result()
 
 class Matcher<T : Any>(private val input: String) {
