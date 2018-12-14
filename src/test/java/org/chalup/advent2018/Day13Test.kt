@@ -17,6 +17,17 @@ class Day13Test {
         ).isEqualTo(Point(7, 3))
     }
 
+    @Test
+    fun `should find the location of magically cleaned crashes`() {
+        assertThat(
+            Day13
+                .simulate(State(magicCleanInput), cleanupCrashes = true)
+                .dropWhile { it.carts.size > 1 }
+                .first()
+                .carts.single().position
+        ).isEqualTo(Point(6, 4))
+    }
+
     companion object {
         val testInput = """
                         /->-\
@@ -26,5 +37,15 @@ class Day13Test {
                         \-+-/  \-+--/
                           \------/
                         """.trimIndent().lines()
+
+        val magicCleanInput = """
+                              />-<\
+                              |   |
+                              | /<+-\
+                              | | | v
+                              \>+</ |
+                                |   ^
+                                \<->/
+                              """.trimIndent().lines()
     }
 }

@@ -72,7 +72,7 @@ object Day13 {
         TURN_RIGHT -> this.cycleNext()
     }
 
-    fun simulate(initialState: State) = generateSequence(initialState) { state ->
+    fun simulate(initialState: State, cleanupCrashes: Boolean = false) = generateSequence(initialState) { state ->
         with(state) {
             if (carts.isEmpty()) return@generateSequence null
 
@@ -91,7 +91,9 @@ object Day13 {
                 val otherCart = (cartQueue + remainingCarts).find { it.position == newCartPosition }
                 when {
                     otherCart != null -> {
-                        newCrashes += newCartPosition
+                        if (!cleanupCrashes) {
+                            newCrashes += newCartPosition
+                        }
                         // remove cart we just crashed at
                         cartQueue.remove(otherCart)
                         remainingCarts.remove(otherCart)
