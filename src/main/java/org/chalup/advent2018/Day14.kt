@@ -29,4 +29,10 @@ object Day14 {
         .recipes
         .drop(trials)
         .take(scores)
+
+    fun Sequence<State>.getNumberOfRecipesPrecedingTheResults(results: String) = this
+        .map { it.recipes.size to it.recipes.takeLast(results.length + 2).joinToString("") }
+        .dropWhile { (_, ending) -> results !in ending }
+        .first()
+        .let { (size, ending) -> size - ending.length + ending.indexOf(results) }
 }
