@@ -1,6 +1,7 @@
 package org.chalup.advent2018
 
 import org.chalup.utils.Point
+import org.chalup.utils.manhattanDistance
 
 object Day15 {
     const val FLOOR = '.'
@@ -90,20 +91,32 @@ object Day15 {
     }
 
     fun Entity.act(state: State): Boolean {
-        // list enemies
-        // return false if empty
+        if (isDead) return true
 
-        // if standing next to enemies
-        //   sort the enemies around me in reading order
-        //   attack the first one
-        // otherwise
-        //   transform list of enemies to list of adjacent tiles
-        //   filter out wall tiles
-        //   flood fill
-        //   limit the target tiles to the ones in flood fill
-        //   order target tiles by path length then by reading order
-        //   backtrack to find the path
-        //   choose the next step from the backtrack by ordering in reading order
+        val enemies = state
+            .entities
+            .filterNot { it.isDead }
+            .filter { it.race != race } // damn, that's racist
+
+        if (enemies.isEmpty()) return false
+
+        val enemyToAttack = enemies
+            .filter { manhattanDistance(position, it.position) == 1 }
+            .sortedWith(compareBy({ it.position.y }, { it.position.x }))
+            .firstOrNull()
+
+        if (enemyToAttack != null) {
+            enemyToAttack.hp -= attack
+        } else {
+            //   transform list of enemies to list of adjacent tiles
+            //   filter out wall tiles
+            //   flood fill
+            //   limit the target tiles to the ones in flood fill
+            //   order target tiles by path length then by reading order
+            //   backtrack to find the path
+            //   choose the next step from the backtrack by ordering in reading order
+
+        }
 
         return true
     }

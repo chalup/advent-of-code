@@ -3,13 +3,12 @@ package org.chalup.advent2018
 import org.chalup.utils.Point
 import org.chalup.utils.bounds
 import org.chalup.utils.isOnTheEdgeOf
+import org.chalup.utils.manhattanDistance
 import org.chalup.utils.points
 import java.lang.Math.abs
 
 object Day6 {
     private class Area(val origin: Point)
-
-    private fun manhattanDistance(a: Point, b: Point) = abs(a.x - b.x) + abs(a.y - b.y)
 
     private fun parse(input: String): Area =
         input.split(",").map { it.trim().toInt() }.let { (x, y) -> Area(Point(x, y)) }

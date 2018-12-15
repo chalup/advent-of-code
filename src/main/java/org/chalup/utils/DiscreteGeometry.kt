@@ -9,6 +9,8 @@ data class Rect(val topLeft: Point, val bottomRight: Point) {
     val height = bottomRight.y - topLeft.y + 1
 }
 
+fun manhattanDistance(a: Point, b: Point) = Math.abs(a.x - b.x) + Math.abs(a.y - b.y)
+
 operator fun Rect.contains(point: Point) = with(point) {
     val (minX, minY) = topLeft
     val (maxX, maxY) = bottomRight
