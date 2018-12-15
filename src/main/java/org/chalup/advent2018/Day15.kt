@@ -80,12 +80,31 @@ object Day15 {
             entities
                 .sortedWith(compareBy({ it.position.y }, { it.position.x }))
                 .forEach { entity ->
-                    // todo
+                    if (!entity.act(state)) return@generateSequence null
                 }
 
             State(map,
                   entities.filterNot { it.isDead },
                   turnsPassed + 1)
         }
+    }
+
+    fun Entity.act(state: State): Boolean {
+        // list enemies
+        // return false if empty
+
+        // if standing next to enemies
+        //   sort the enemies around me in reading order
+        //   attack the first one
+        // otherwise
+        //   transform list of enemies to list of adjacent tiles
+        //   filter out wall tiles
+        //   flood fill
+        //   limit the target tiles to the ones in flood fill
+        //   order target tiles by path length then by reading order
+        //   backtrack to find the path
+        //   choose the next step from the backtrack by ordering in reading order
+
+        return true
     }
 }
