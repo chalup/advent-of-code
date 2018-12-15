@@ -3,8 +3,8 @@ package org.chalup.advent2018
 import org.chalup.utils.Point
 import org.chalup.utils.Vector
 import org.chalup.utils.bounds
-import org.chalup.utils.manhattanDistance
 import org.chalup.utils.plus
+import java.util.PriorityQueue
 
 object Day15 {
     const val FLOOR = '.'
@@ -19,7 +19,8 @@ object Day15 {
                       val race: Race,
                       var hp: Int = 200,
                       val attack: Int = 3) {
-        val isDead = hp <= 0
+        val isDead: Boolean
+            get() = hp <= 0
     }
 
     data class State(val map: Set<Point>, // wall tiles
@@ -90,13 +91,11 @@ object Day15 {
 
     fun simulate(initial: State) = generateSequence(initial) { state ->
         with(state) {
+            if (entities.map { it.race }.size == 1) return@generateSequence null
+
             entities
                 .sortedWith(entitiesComparator)
-                .forEach { entity ->
-                    val simulationOver = entity.act(state)
-
-                    if (simulationOver) return@generateSequence null
-                }
+                .forEach { entity -> entity.act(state) }
 
             State(map,
                   entities.filterNot { it.isDead },
@@ -111,18 +110,20 @@ object Day15 {
         RIGHT(Vector(1, 0))
     }
 
-    fun Entity.act(state: State): Boolean {
-        if (isDead) return false
+    fun Entity.act(state: State) {
+        if (isDead) return
 
         val enemies = state
             .entities
             .filterNot { it.isDead }
             .filter { it.race != race } // damn, that's racist
 
-        if (enemies.isEmpty()) return true
+        if (enemies.isEmpty()) return
+
+        val adjacentTiles = position.adjacentTiles().toSet()
 
         val enemyToAttack = enemies
-            .filter { manhattanDistance(position, it.position) == 1 }
+            .filter { it.position in adjacentTiles }
             .sortedWith(entitiesComparator)
             .firstOrNull()
 
@@ -140,35 +141,58 @@ object Day15 {
             val moveDestination = enemies
                 .flatMap { enemy -> enemy.position.adjacentTiles() }
                 .filter { it in floodFill.keys }
-                .sortedWith(compareByDescending<Point> { floodFill.getValue(it) }.then(pointComparator))
-                .firstOrNull() ?: return false
+                .sortedWith(compareBy<Point> { floodFill.getValue(it) }.then(pointComparator))
+                .firstOrNull() ?: return
 
-            //   backtrack to find the path
-            //   choose the next step from the backtrack by ordering in reading order
+            val backtrackedPath = backtrack(moveDestination, floodFill)
+            val step = backtrackedPath
+                .filter { it in adjacentTiles }
+                .sortedWith(pointComparator)
+                .first()
+
+            check(step !in blockedTiles)
+
+            position = step
         }
-
-        return false
     }
+
+    fun backtrack(destination: Point, floodFill: Map<Point, Int>): List<Point> =
+        destination
+            .adjacentTiles()
+            .filter { it in floodFill.keys }
+            .filter { floodFill.getValue(it) < floodFill.getValue(destination) }
+            .flatMap { backtrack(it, floodFill) + destination }
 
     fun Point.adjacentTiles() = Direction.values().map { direction -> this + direction.vector }
 
     fun floodFill(startingPosition: Point, blockedTiles: Set<Point>): Map<Point, Int> {
         val result = mutableMapOf<Point, Int>()
 
-        val queue = sortedSetOf(
-            compareBy { point -> manhattanDistance(point, startingPosition) },
-            startingPosition
-        )
+        val enqueuedPoints = mutableSetOf<Point>()
+        val queue = PriorityQueue<Pair<Point, Int>>(compareBy { (_, distance) -> distance })
+
+        fun enqueue(point: Point, distance: Int) {
+            queue.add(point to distance)
+            enqueuedPoints.add(point)
+        }
+
+        fun takeFirst() = queue
+            .remove()
+            .also { (point, _) -> enqueuedPoints.remove(point) }
+
+        enqueue(startingPosition, 0)
+
         while (queue.isNotEmpty()) {
-            val point = queue.pollFirst()
+            val (point, distance) = takeFirst()
 
-            result[point] = manhattanDistance(point, startingPosition)
+            result[point] = distance
 
-            queue += point
+            point
                 .adjacentTiles()
                 .filterNot { it in blockedTiles }
                 .filterNot { it in result.keys }
-                .filterNot { it in queue }
+                .filterNot { it in enqueuedPoints }
+                .forEach { enqueue(it, distance + 1) }
         }
 
         return result
