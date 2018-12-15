@@ -37,3 +37,7 @@ infix fun Point.isOnTheEdgeOf(bounds: Rect) = with(bounds) {
         else -> false
     }
 }
+
+data class Vector(val dx: Int, val dy: Int)
+
+operator fun Point.plus(velocity: Vector) = with(velocity) { Point(x + dx, y + dy) }

@@ -1,10 +1,11 @@
 package org.chalup.advent2018
 
 import org.chalup.utils.Point
+import org.chalup.utils.Vector
 import org.chalup.utils.bounds
+import org.chalup.utils.plus
 
 object Day10 {
-    data class Vector(val dx: Int, val dy: Int)
     data class Star(val location: Point,
                     val velocity: Vector)
 
@@ -43,6 +44,4 @@ object Day10 {
     private fun List<Star>.span(): Long = map { it.location }
         .bounds()
         .let { it.width.toLong() * it.height.toLong() }
-
-    private operator fun Point.plus(velocity: Vector) = with(velocity) { Point(x + dx, y + dy) }
 }

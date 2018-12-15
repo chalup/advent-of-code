@@ -1,7 +1,10 @@
 package org.chalup.advent2018
 
 import org.chalup.utils.Point
+import org.chalup.utils.Vector
+import org.chalup.utils.bounds
 import org.chalup.utils.manhattanDistance
+import org.chalup.utils.plus
 
 object Day15 {
     const val FLOOR = '.'
@@ -19,17 +22,20 @@ object Day15 {
         val isDead = hp <= 0
     }
 
-    data class State(val map: List<String>,
+    data class State(val map: Set<Point>, // wall tiles
                      val entities: List<Entity>,
                      val turnsPassed: Int = 0) {
         constructor(input: List<String>) : this(
-            map = input.map { inputRow ->
-                Race
-                    .values()
-                    .fold(inputRow) { row, race ->
-                        row.replace(race.symbol, FLOOR)
+            map = input
+                .mapIndexed { y, row ->
+                    row.mapIndexed { x, tile ->
+                        Point(x, y).takeIf { tile == WALL }
                     }
-            },
+                }
+                .flatten()
+                .filterNotNull()
+                .toSet()
+            ,
             entities = input
                 .mapIndexed { y, row ->
                     row.mapIndexed { x, tile ->
@@ -51,19 +57,22 @@ object Day15 {
         println("Turn #$turnsPassed")
 
         val entitiesByPosition = entities.associateBy { it.position }
+        val (topLeft, bottomRight) = map.bounds()
 
-        map.forEachIndexed { y, row ->
+        for (y in topLeft.y..bottomRight.y) {
 
             val rowEntities = mutableListOf<Entity>()
 
-            row.forEachIndexed { x, tile ->
-                val entity = entitiesByPosition[Point(x, y)]
+            for (x in topLeft.x..bottomRight.x) {
+                val point = Point(x, y)
+
+                val entity = entitiesByPosition[point]
 
                 if (entity != null) {
                     rowEntities += entity
                     print(entity.race.symbol)
                 } else {
-                    print(tile)
+                    print(if (point in map) WALL else FLOOR)
                 }
             }
 
@@ -76,12 +85,17 @@ object Day15 {
         println()
     }
 
+    val pointComparator: Comparator<Point> = compareBy({ it.y }, { it.x })
+    val entitiesComparator: Comparator<Entity> = compareBy(pointComparator) { it.position }
+
     fun simulate(initial: State) = generateSequence(initial) { state ->
         with(state) {
             entities
-                .sortedWith(compareBy({ it.position.y }, { it.position.x }))
+                .sortedWith(entitiesComparator)
                 .forEach { entity ->
-                    if (!entity.act(state)) return@generateSequence null
+                    val simulationOver = entity.act(state)
+
+                    if (simulationOver) return@generateSequence null
                 }
 
             State(map,
@@ -90,34 +104,73 @@ object Day15 {
         }
     }
 
+    enum class Direction(val vector: Vector) {
+        UP(Vector(0, -1)),
+        DOWN(Vector(0, 1)),
+        LEFT(Vector(-1, 0)),
+        RIGHT(Vector(1, 0))
+    }
+
     fun Entity.act(state: State): Boolean {
-        if (isDead) return true
+        if (isDead) return false
 
         val enemies = state
             .entities
             .filterNot { it.isDead }
             .filter { it.race != race } // damn, that's racist
 
-        if (enemies.isEmpty()) return false
+        if (enemies.isEmpty()) return true
 
         val enemyToAttack = enemies
             .filter { manhattanDistance(position, it.position) == 1 }
-            .sortedWith(compareBy({ it.position.y }, { it.position.x }))
+            .sortedWith(entitiesComparator)
             .firstOrNull()
 
         if (enemyToAttack != null) {
             enemyToAttack.hp -= attack
         } else {
-            //   transform list of enemies to list of adjacent tiles
-            //   filter out wall tiles
-            //   flood fill
-            //   limit the target tiles to the ones in flood fill
-            //   order target tiles by path length then by reading order
+            val blockedTiles = state
+                .entities
+                .filterNot { it.isDead }
+                .map { it.position }
+                .toSet() + state.map
+
+            val floodFill = floodFill(position, blockedTiles)
+
+            val moveDestination = enemies
+                .flatMap { enemy -> enemy.position.adjacentTiles() }
+                .filter { it in floodFill.keys }
+                .sortedWith(compareByDescending<Point> { floodFill.getValue(it) }.then(pointComparator))
+                .firstOrNull() ?: return false
+
             //   backtrack to find the path
             //   choose the next step from the backtrack by ordering in reading order
-
         }
 
-        return true
+        return false
+    }
+
+    fun Point.adjacentTiles() = Direction.values().map { direction -> this + direction.vector }
+
+    fun floodFill(startingPosition: Point, blockedTiles: Set<Point>): Map<Point, Int> {
+        val result = mutableMapOf<Point, Int>()
+
+        val queue = sortedSetOf(
+            compareBy { point -> manhattanDistance(point, startingPosition) },
+            startingPosition
+        )
+        while (queue.isNotEmpty()) {
+            val point = queue.pollFirst()
+
+            result[point] = manhattanDistance(point, startingPosition)
+
+            queue += point
+                .adjacentTiles()
+                .filterNot { it in blockedTiles }
+                .filterNot { it in result.keys }
+                .filterNot { it in queue }
+        }
+
+        return result
     }
 }
