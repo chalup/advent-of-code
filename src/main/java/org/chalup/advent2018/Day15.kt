@@ -1,5 +1,7 @@
 package org.chalup.advent2018
 
+import org.chalup.advent2018.Day15.Race.ELF
+import org.chalup.advent2018.Day15.Race.GOBLIN
 import org.chalup.utils.Point
 import org.chalup.utils.Vector
 import org.chalup.utils.bounds
@@ -28,7 +30,7 @@ object Day15 {
                      val entities: List<Entity>,
                      val turnsPassed: Int = 0,
                      val wasFullRound: Boolean = true) {
-        constructor(input: List<String>) : this(
+        constructor(input: List<String>, bonusElfPower: Int = 0) : this(
             map = input
                 .mapIndexed { y, row ->
                     row.mapIndexed { x, tile ->
@@ -47,6 +49,10 @@ object Day15 {
                             .find { it.symbol == tile }
                             ?.let { race ->
                                 Entity(position = Point(x, y),
+                                       attack = when (race) {
+                                           ELF -> 3 + bonusElfPower
+                                           GOBLIN -> 3
+                                       },
                                        race = race)
                             }
                     }
@@ -232,4 +238,18 @@ object Day15 {
         .onEach { println("Round ${it.turnsPassed}") }
         .last()
         .run { println(score()) }
+
+    fun part2(input: List<String>) {
+        fun State.elvesCount() = entities.count { it.race == ELF }
+
+        println("Trying to make all ${State(input).elvesCount()} survive")
+
+        generateSequence(0) { it + 1 }
+            .onEach { println("Trying bonus elf power $it") }
+            .map { simulate(State(input, it)).onEach { print(".") }.last() }
+            .onEach { println(": ${it.elvesCount()}") }
+            .dropWhile { finalState -> finalState.elvesCount() < State(input).elvesCount() }
+            .first()
+            .run { println(score()) }
+    }
 }
