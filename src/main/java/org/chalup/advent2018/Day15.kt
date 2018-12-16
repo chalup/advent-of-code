@@ -17,6 +17,7 @@ object Day15 {
 
     data class Entity(var position: Point,
                       val race: Race,
+                      var readingOrder: Int = 0,
                       var hp: Int = 200,
                       val attack: Int = 3) {
         val isDead: Boolean
@@ -25,7 +26,8 @@ object Day15 {
 
     data class State(val map: Set<Point>, // wall tiles
                      val entities: List<Entity>,
-                     val turnsPassed: Int = 0) {
+                     val turnsPassed: Int = 0,
+                     val wasFullRound: Boolean = true) {
         constructor(input: List<String>) : this(
             map = input
                 .mapIndexed { y, row ->
@@ -51,11 +53,12 @@ object Day15 {
                 }
                 .flatten()
                 .filterNotNull()
+                .updateReadingOrder()
         )
     }
 
     fun State.print() {
-        println("Turn #$turnsPassed")
+        println("Turn #$turnsPassed ${if (wasFullRound) "" else "(terminated early)"}")
 
         val entitiesByPosition = entities.associateBy { it.position }
         val (topLeft, bottomRight) = map.bounds()
@@ -87,19 +90,25 @@ object Day15 {
     }
 
     val pointComparator: Comparator<Point> = compareBy({ it.y }, { it.x })
-    val entitiesComparator: Comparator<Entity> = compareBy(pointComparator) { it.position }
+
+    fun List<Entity>.updateReadingOrder() = also { entities ->
+        entities
+            .sortedWith(compareBy(pointComparator) { it.position })
+            .mapIndexed { index, entity -> entity.readingOrder = index }
+    }
 
     fun simulate(initial: State) = generateSequence(initial) { state ->
         with(state) {
-            if (entities.map { it.race }.size == 1) return@generateSequence null
+            if (entities.map { it.race }.toSet().size == 1) return@generateSequence null
 
-            entities
-                .sortedWith(entitiesComparator)
-                .forEach { entity -> entity.act(state) }
+            val wasFullRound = entities
+                .sortedBy { it.readingOrder }
+                .all { entity -> entity.act(state) }
 
             State(map,
-                  entities.filterNot { it.isDead },
-                  turnsPassed + 1)
+                  entities.filterNot { it.isDead }.updateReadingOrder(),
+                  turnsPassed + 1,
+                  wasFullRound)
         }
     }
 
@@ -110,21 +119,21 @@ object Day15 {
         RIGHT(Vector(1, 0))
     }
 
-    fun Entity.act(state: State) {
-        if (isDead) return
+    fun Entity.act(state: State): Boolean {
+        if (isDead) return true
 
         val enemies = state
             .entities
             .filterNot { it.isDead }
             .filter { it.race != race } // damn, that's racist
 
-        if (enemies.isEmpty()) return
+        if (enemies.isEmpty()) return false
 
         val adjacentTiles = position.adjacentTiles().toSet()
 
         val enemyToAttack = enemies
             .filter { it.position in adjacentTiles }
-            .sortedWith(entitiesComparator)
+            .sortedWith(compareBy({ it.hp }, { it.readingOrder }))
             .firstOrNull()
 
         if (enemyToAttack != null) {
@@ -142,7 +151,7 @@ object Day15 {
                 .flatMap { enemy -> enemy.position.adjacentTiles() }
                 .filter { it in floodFill.keys }
                 .sortedWith(compareBy<Point> { floodFill.getValue(it) }.then(pointComparator))
-                .firstOrNull() ?: return
+                .firstOrNull() ?: return true
 
             val backtrackedPath = backtrack(moveDestination, floodFill)
             val step = backtrackedPath
@@ -153,7 +162,19 @@ object Day15 {
             check(step !in blockedTiles)
 
             position = step
+
+            // attack after move
+            val enemyToAttackAfterMove = enemies
+                .filter { it.position in position.adjacentTiles() }
+                .sortedWith(compareBy({ it.hp }, { it.readingOrder }))
+                .firstOrNull()
+
+            if (enemyToAttackAfterMove != null) {
+                enemyToAttackAfterMove.hp -= attack
+            }
         }
+
+        return true
     }
 
     fun backtrack(destination: Point, floodFill: Map<Point, Int>): List<Point> =
