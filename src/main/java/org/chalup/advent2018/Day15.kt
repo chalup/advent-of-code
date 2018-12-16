@@ -218,4 +218,18 @@ object Day15 {
 
         return result
     }
+
+    fun State.score(): Int {
+        var fullRounds = turnsPassed
+        if (!wasFullRound) fullRounds--
+
+        val hitPointsLeft = entities.sumBy { it.hp }
+
+        return fullRounds * hitPointsLeft
+    }
+
+    fun part1(input: List<String>) = simulate(State(input))
+        .onEach { println("Round ${it.turnsPassed}") }
+        .last()
+        .run { println(score()) }
 }
