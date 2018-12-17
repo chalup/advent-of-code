@@ -7,6 +7,8 @@ data class Rect(val topLeft: Point, val bottomRight: Point) {
 
     val width = bottomRight.x - topLeft.x + 1
     val height = bottomRight.y - topLeft.y + 1
+
+    val bottom = bottomRight.y
 }
 
 fun manhattanDistance(a: Point, b: Point) = Math.abs(a.x - b.x) + Math.abs(a.y - b.y)
