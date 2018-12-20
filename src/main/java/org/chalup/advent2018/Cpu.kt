@@ -17,7 +17,10 @@ import org.chalup.advent2018.Cpu.Opcode.MULR
 import org.chalup.advent2018.Cpu.Opcode.SETI
 import org.chalup.advent2018.Cpu.Opcode.SETR
 
-data class Cpu(val registers: MutableList<Int> = MutableList(4) { 0 }) {
+data class Cpu(val registers: MutableList<Int> = MutableList(4) { 0 },
+               private var instructionPointer: Int = 0) {
+    constructor(numberOfRegisters: Int) : this(MutableList(numberOfRegisters) { 0 })
+
     fun execute(opcode: Opcode, params: List<Int>) {
         val (inA, inB, out) = params
 
@@ -49,5 +52,27 @@ data class Cpu(val registers: MutableList<Int> = MutableList(4) { 0 }) {
         SETR, SETI,
         GTIR, GTRI, GTRR,
         EQIR, EQRI, EQRR
+    }
+
+    data class Instruction(val opcode: Opcode, val params: List<Int>)
+
+    data class Program(val instructions: List<Instruction>,
+                       val instructionPointerBinding: Int)
+
+    fun executeProgram(program: Program) = with(program) {
+        instructionPointer = 0
+
+        while (instructionPointer in program.instructions.indices) {
+            registers[instructionPointerBinding] = instructionPointer
+
+            val (opcode, params) = instructions[instructionPointer]
+            execute(opcode, params)
+
+            instructionPointer = registers[instructionPointerBinding] + 1
+        }
+    }
+
+    fun dump() {
+        println("IP: ${instructionPointer.toString().padStart(10)} | ${registers.joinToString(separator = " ") { "$it".padStart(10) }}")
     }
 }
