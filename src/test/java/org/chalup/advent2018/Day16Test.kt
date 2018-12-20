@@ -1,10 +1,9 @@
 package org.chalup.advent2018
 
 import com.google.common.truth.Truth.assertThat
-import org.chalup.advent2018.Day14.getScoresAfterSomeTrials
-import org.chalup.advent2018.Day16.Opcode.ADDI
-import org.chalup.advent2018.Day16.Opcode.MULR
-import org.chalup.advent2018.Day16.Opcode.SETI
+import org.chalup.advent2018.Cpu.Opcode.ADDI
+import org.chalup.advent2018.Cpu.Opcode.MULR
+import org.chalup.advent2018.Cpu.Opcode.SETI
 import org.chalup.advent2018.Day16.TestResult
 import org.junit.jupiter.api.Test
 
