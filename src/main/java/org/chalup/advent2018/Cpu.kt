@@ -82,4 +82,19 @@ data class Cpu(val registers: MutableList<Int> = MutableList(4) { 0 },
     fun dump() {
         println("IP: ${instructionPointer.toString().padStart(10)} | ${registers.joinToString(separator = " ") { "$it".padStart(10) }}")
     }
+
+    companion object {
+        fun parseProgram(input: List<String>) =
+            Program(instructions = input.drop(1).map { parseInstruction(it) },
+                    instructionPointerBinding = parseBinding(input.first()))
+
+        private fun parseBinding(bindingInput: String) = bindingInput.split(' ').last().toInt()
+
+        private fun parseInstruction(instructionInput: String) = instructionInput.split(' ').let { elements ->
+            val opcode = Opcode.valueOf(elements.first().toUpperCase())
+            val params = elements.drop(1).map { it.toInt() }
+
+            Instruction(opcode, params)
+        }
+    }
 }

@@ -1,5 +1,6 @@
 package org.chalup.advent2018
 
+import org.chalup.advent2018.Cpu.Companion.parseProgram
 import org.chalup.advent2018.Cpu.Instruction
 import org.chalup.advent2018.Cpu.Opcode
 import org.chalup.advent2018.Cpu.Program
@@ -7,10 +8,6 @@ import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
 object Day19 {
-    fun parseProgram(input: List<String>) =
-        Program(instructions = input.drop(1).map { parseInstruction(it) },
-                instructionPointerBinding = parseBinding(input.first()))
-
     fun part1(input: List<String>) =
         Cpu(numberOfRegisters = 6)
             .apply {
@@ -33,15 +30,6 @@ object Day19 {
                 )
             }
             .registers[0]
-
-    private fun parseBinding(bindingInput: String) = bindingInput.split(' ').last().toInt()
-
-    private fun parseInstruction(instructionInput: String) = instructionInput.split(' ').let { elements ->
-        val opcode = Opcode.valueOf(elements.first().toUpperCase())
-        val params = elements.drop(1).map { it.toInt() }
-
-        Instruction(opcode, params)
-    }
 }
 
 private fun Cpu.calculateSumOfFactors() {
