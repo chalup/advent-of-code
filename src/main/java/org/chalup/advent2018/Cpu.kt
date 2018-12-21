@@ -58,13 +58,17 @@ data class Cpu(val registers: MutableList<Int> = MutableList(4) { 0 },
 
     data class Program(val instructions: List<Instruction>,
                        val instructionPointerBinding: Int,
-                       val specialHandlers: Map<Int, Cpu.() -> Unit> = emptyMap())
+                       val specialHandlers: Map<Int, Cpu.() -> Unit> = emptyMap(),
+                       val breakPoints: Map<Int, Cpu.() -> Boolean> = emptyMap())
 
     fun executeProgram(program: Program) = with(program) {
         instructionPointer = 0
 
         while (instructionPointer in program.instructions.indices) {
             registers[instructionPointerBinding] = instructionPointer
+
+            val halt = breakPoints[instructionPointer]?.invoke(this@Cpu) ?: false
+            if (halt) return@with
 
             val specialHandler = specialHandlers[instructionPointer]
 
