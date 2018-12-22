@@ -6,31 +6,35 @@ import org.chalup.utils.plus
 import java.util.LinkedList
 
 object Day20 {
-    data class TraverseHead(val location: Point = Point(0, 0),
-                            val travelledDistance: Int = 0)
-
     fun part1(input: String): Int = traverse(input)
-        .also { println("${it.size}") }
-        .groupBy { it.location }
-        .mapValues { (_, heads) -> heads.map { it.travelledDistance }.min()!! }
         .values
         .max()!!
 
-    fun traverse(input: String): MutableSet<TraverseHead> {
-        var activeHeads = mutableSetOf<TraverseHead>()
-        val waitingHeads = LinkedList<MutableSet<TraverseHead>>()
-        val parkedHeads = LinkedList<MutableSet<TraverseHead>>()
+    fun traverse(input: String): Map<Point, Int> {
+        val distances = mutableMapOf(Point(0, 0) to 0)
+
+        var activeHeads = mutableSetOf<Point>()
+        val waitingHeads = LinkedList<MutableSet<Point>>()
+        val parkedHeads = LinkedList<MutableSet<Point>>()
 
         fun traverse(dx: Int, dy: Int) {
-            activeHeads = activeHeads.mapTo(mutableSetOf()) {
-                TraverseHead(location = it.location + Vector(dx, dy),
-                             travelledDistance = it.travelledDistance + 1)
+            activeHeads = activeHeads.mapNotNullTo(mutableSetOf()) { from ->
+                val to = from + Vector(dx, dy)
+                val distance = distances.getValue(from) + 1
+
+                val knownDistance = distances[to]
+
+                if (knownDistance != null && knownDistance <= distance) {
+                    null
+                } else {
+                    to.also { distances[to] = distance }
+                }
             }
         }
 
         input.forEach {
             when (it) {
-                '^' -> activeHeads = mutableSetOf(TraverseHead())
+                '^' -> activeHeads = mutableSetOf(Point(0, 0))
                 'N' -> traverse(0, -1)
                 'S' -> traverse(0, +1)
                 'W' -> traverse(-1, 0)
@@ -47,7 +51,7 @@ object Day20 {
                     activeHeads.addAll(waitingHeads.pop())
                     parkedHeads.pop()
                 }
-                '$' -> return activeHeads
+                '$' -> return distances
             }
         }
 
