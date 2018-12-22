@@ -1,5 +1,6 @@
 package org.chalup.advent2018
 
+import org.chalup.advent2018.Day22.Cave.Companion.CAVE_MOUTH
 import org.chalup.utils.Point
 import org.chalup.utils.Rect
 import org.chalup.utils.points
@@ -11,39 +12,37 @@ object Day22 {
         NARROW(2)
     }
 
-    private val CAVE_MOUTH = Point(0, 0)
+    class Cave(private val depth: Int,
+               private val target: Point) {
 
-    fun calculateData(depth: Int, target: Point): Map<Point, TerrainType> {
-        val area = Rect(topLeft = CAVE_MOUTH,
-                        bottomRight = target)
+        private val geoIndexMap: MutableMap<Point, Int> = mutableMapOf()
+        private val erosionLevels: MutableMap<Point, Int> = mutableMapOf()
 
-        val geoIndexMap: MutableMap<Point, Int> = mutableMapOf()
-        val erosionLevels: MutableMap<Point, Int> = mutableMapOf()
-
-        for (point in area.points().sortedWith(compareBy({ it.y }, { it.x }))) {
-            val (x, y) = point
-
-            geoIndexMap[point] = when {
-                point == CAVE_MOUTH -> 0
-                point == target -> 0
-                y == 0 -> x * 16807
-                x == 0 -> y * 48271
-                else -> erosionLevels.getValue(Point(x, y - 1)) * erosionLevels.getValue(Point(x - 1, y))
+        private fun geoIndex(location: Point): Int = geoIndexMap.getOrPut(location) {
+            when {
+                location == CAVE_MOUTH -> 0
+                location == target -> 0
+                location.y == 0 -> location.x * 16807
+                location.x == 0 -> location.y * 48271
+                else -> erosionLevel(Point(location.x, location.y - 1)) *
+                        erosionLevel(Point(location.x - 1, location.y))
             }
-
-            erosionLevels[point] = (geoIndexMap.getValue(point) + depth) % 20183
         }
 
+        private fun erosionLevel(location: Point): Int = erosionLevels.getOrPut(location) {
+            (geoIndex(location) + depth) % 20183
+        }
 
-        return erosionLevels.mapValues { (_, erosionLevel) ->
-            when (erosionLevel % 3) {
-                0 -> TerrainType.ROCKY
-                1 -> TerrainType.WET
-                2 -> TerrainType.NARROW
-                else -> throw IllegalStateException("Impossiburu!")
-            }
+        operator fun get(location: Point) = TerrainType.values()[erosionLevel(location) % 3]
+
+        companion object {
+            val CAVE_MOUTH = Point(0, 0)
         }
     }
 
-    fun estimateTotalRisk(depth: Int, target: Point) = calculateData(depth, target).values.sumBy { it.riskLevel }
+    fun estimateTotalRisk(depth: Int, target: Point) = Cave(depth, target).let { cave ->
+        Rect(topLeft = CAVE_MOUTH, bottomRight = target)
+            .points()
+            .sumBy { cave[it].riskLevel }
+    }
 }
