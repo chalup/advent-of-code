@@ -22,7 +22,9 @@ class Day20Test {
             Arguments.arguments("^ENWWW(NEEE|SSE(EE|N))$", 10),
             Arguments.arguments("^ENNWSWW(NEWS|)SSSEEN(WNSE|)EE(SWEN|)NNN$", 18),
             Arguments.arguments("^ESSWWN(E|NNENN(EESS(WNSE|)SSS|WWWSSSSE(SW|NNNE)))$", 23),
-            Arguments.arguments("^WSSEESWWWNW(S|NENNEEEENN(ESSSSW(NWSW|SSEN)|WSWWN(E|WWS(E|SS))))$", 31)
+            Arguments.arguments("^WSSEESWWWNW(S|NENNEEEENN(ESSSSW(NWSW|SSEN)|WSWWN(E|WWS(E|SS))))$", 31),
+            Arguments.arguments("^$", 0),
+            Arguments.arguments("^NNNN(E|WW)NNNN$", 10)
         )
     }
 }

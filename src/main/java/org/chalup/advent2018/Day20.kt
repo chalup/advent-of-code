@@ -1,71 +1,53 @@
 package org.chalup.advent2018
 
-import java.util.LinkedList
-
 object Day20 {
-    class Node(var path: String = "",
-               val children: MutableList<Node> = mutableListOf()) {
-        val allPaths: List<LinkedList<Node>> by lazy {
-            children
-                .flatMap { it.allPaths }
-                .ifEmpty { listOf(LinkedList()) }
-                .map { path ->
-                    if (this.path == "") {
-                        path
-                    } else {
-                        LinkedList(path).apply { addFirst(this@Node) }
-                    }
-                }
+    data class RoutesGroup(val minLength: Int,
+                           val maxLength: Int)
+
+    fun part1(input: String): Int = processGroup(input.asIterable().iterator()).maxLength
+
+    fun processGroup(input: Iterator<Char>): RoutesGroup {
+        var routesChain = emptyList<RoutesGroup>()
+        var alternativeRoutes = emptySet<RoutesGroup>()
+        var currentRouteLength: Int? = null
+
+        fun appendCurrentPath() {
+            currentRouteLength?.run { routesChain += RoutesGroup(this, this) }
+            currentRouteLength = null
         }
-    }
 
-    fun parseMap(input: String): Node {
-        val rootNode = Node()
-        lateinit var currentNode: Node
-        val stack = LinkedList<Node>()
-        val groupEnds = LinkedList<MutableList<Node>>()
+        fun List<RoutesGroup>.combine(): RoutesGroup {
+            val combinedLength = dropLast(1).sumBy { it.minLength } + last().maxLength
+            return RoutesGroup(combinedLength, combinedLength)
+        }
 
-        input.forEach { token ->
-            when (token) {
-                '^' -> currentNode = rootNode
-                '$' -> Unit
+        fun Set<RoutesGroup>.combine() = RoutesGroup(
+            map { it.minLength }.min()!!,
+            map { it.maxLength }.max()!!
+        )
+
+        input.forEach {
+            when (it) {
+                '^' -> Unit
                 '(' -> {
-                    val parentNode = currentNode
-                    currentNode = Node()
-                    parentNode.children += currentNode
-
-                    stack.push(parentNode)
-                    groupEnds.push(mutableListOf())
+                    appendCurrentPath()
+                    routesChain += processGroup(input)
+                }
+                '$', ')' -> {
+                    appendCurrentPath()
+                    alternativeRoutes += routesChain.combine()
+                    return alternativeRoutes.combine()
                 }
                 '|' -> {
-                    groupEnds.peek() += currentNode
-                    currentNode = Node()
-                    stack.peek().children += currentNode
+                    appendCurrentPath()
+                    currentRouteLength = 0
+                    alternativeRoutes += routesChain.combine()
+                    routesChain = emptyList()
                 }
-                ')' -> {
-                    val parents = groupEnds.pop() + currentNode
-                    stack.pop()
-                    currentNode = Node()
-                    parents.forEach { it.children += currentNode }
-                }
-                'N', 'E', 'S', 'W' -> currentNode.path += token
+                'N', 'E', 'S', 'W' -> currentRouteLength = (currentRouteLength ?: 0) + 1
             }
         }
-        return rootNode
+
+        throw IllegalStateException("Hmm, I should have encountered '$' or ')' token earlier!")
     }
-
-    fun shortestPathLengthToMostDistantRoom(paths: List<LinkedList<Node>>) =
-        paths
-            .groupBy { it.last }
-            .mapValues { (_, alternativePath) ->
-                alternativePath.minBy { it.sumBy { it.path.length } }!!
-            }
-            .values
-            .map { it.sumBy { it.path.length } }
-            .max()!!
-
-    fun part1(input: String) =
-        parseMap(input)
-            .allPaths
-            .let { shortestPathLengthToMostDistantRoom(it) }
 }
