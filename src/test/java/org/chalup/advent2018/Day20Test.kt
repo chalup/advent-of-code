@@ -24,7 +24,8 @@ class Day20Test {
             Arguments.arguments("^ESSWWN(E|NNENN(EESS(WNSE|)SSS|WWWSSSSE(SW|NNNE)))$", 23),
             Arguments.arguments("^WSSEESWWWNW(S|NENNEEEENN(ESSSSW(NWSW|SSEN)|WSWWN(E|WWS(E|SS))))$", 31),
             Arguments.arguments("^$", 0),
-            Arguments.arguments("^NNNN(E|WW)NNNN$", 10)
+            Arguments.arguments("^NNNN(E|WW)NNNN$", 10),
+            Arguments.arguments("^EEEE(N|EENWW)NNNN$", 9)
         )
     }
 }

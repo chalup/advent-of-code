@@ -1,53 +1,56 @@
 package org.chalup.advent2018
 
+import org.chalup.utils.Point
+import org.chalup.utils.Vector
+import org.chalup.utils.plus
+import java.util.LinkedList
+
 object Day20 {
-    data class RoutesGroup(val minLength: Int,
-                           val maxLength: Int)
+    data class TraverseHead(val location: Point = Point(0, 0),
+                            val travelledDistance: Int = 0)
 
-    fun part1(input: String): Int = processGroup(input.asIterable().iterator()).maxLength
+    fun part1(input: String): Int = traverse(input)
+        .also { println("${it.size}") }
+        .groupBy { it.location }
+        .mapValues { (_, heads) -> heads.map { it.travelledDistance }.min()!! }
+        .values
+        .max()!!
 
-    fun processGroup(input: Iterator<Char>): RoutesGroup {
-        var routesChain = emptyList<RoutesGroup>()
-        var alternativeRoutes = emptySet<RoutesGroup>()
-        var currentRouteLength: Int? = null
+    fun traverse(input: String): MutableSet<TraverseHead> {
+        var activeHeads = mutableSetOf<TraverseHead>()
+        val waitingHeads = LinkedList<MutableSet<TraverseHead>>()
+        val parkedHeads = LinkedList<MutableSet<TraverseHead>>()
 
-        fun appendCurrentPath() {
-            currentRouteLength?.run { routesChain += RoutesGroup(this, this) }
-            currentRouteLength = null
-        }
-
-        fun List<RoutesGroup>.combine(): RoutesGroup {
-            val combinedLength = dropLast(1).sumBy { it.minLength } + last().maxLength
-            return RoutesGroup(combinedLength, combinedLength)
-        }
-
-        fun Set<RoutesGroup>.combine() = RoutesGroup(
-            map { it.minLength }.min()!!,
-            map { it.maxLength }.max()!!
-        )
-
-        input.forEach {
-            when (it) {
-                '^' -> Unit
-                '(' -> {
-                    appendCurrentPath()
-                    routesChain += processGroup(input)
-                }
-                '$', ')' -> {
-                    appendCurrentPath()
-                    alternativeRoutes += routesChain.combine()
-                    return alternativeRoutes.combine()
-                }
-                '|' -> {
-                    appendCurrentPath()
-                    currentRouteLength = 0
-                    alternativeRoutes += routesChain.combine()
-                    routesChain = emptyList()
-                }
-                'N', 'E', 'S', 'W' -> currentRouteLength = (currentRouteLength ?: 0) + 1
+        fun traverse(dx: Int, dy: Int) {
+            activeHeads = activeHeads.mapTo(mutableSetOf()) {
+                TraverseHead(location = it.location + Vector(dx, dy),
+                             travelledDistance = it.travelledDistance + 1)
             }
         }
 
-        throw IllegalStateException("Hmm, I should have encountered '$' or ')' token earlier!")
+        input.forEach {
+            when (it) {
+                '^' -> activeHeads = mutableSetOf(TraverseHead())
+                'N' -> traverse(0, -1)
+                'S' -> traverse(0, +1)
+                'W' -> traverse(-1, 0)
+                'E' -> traverse(+1, 0)
+                '(' -> {
+                    parkedHeads.push(activeHeads.toMutableSet())
+                    waitingHeads.push(mutableSetOf())
+                }
+                '|' -> {
+                    waitingHeads.peek().addAll(activeHeads)
+                    activeHeads = parkedHeads.peek().toMutableSet()
+                }
+                ')' -> {
+                    activeHeads.addAll(waitingHeads.pop())
+                    parkedHeads.pop()
+                }
+                '$' -> return activeHeads
+            }
+        }
+
+        throw IllegalStateException("Impossiburu!")
     }
 }
