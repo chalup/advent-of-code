@@ -1,8 +1,6 @@
 package org.chalup.advent2018
 
 import com.google.common.truth.Truth.assertThat
-import org.chalup.advent2018.Day14.getNumberOfRecipesPrecedingTheResults
-import org.chalup.advent2018.Day14.getScoresAfterSomeTrials
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
@@ -24,8 +22,15 @@ class Day20Test {
             Arguments.arguments("^ESSWWN(E|NNENN(EESS(WNSE|)SSS|WWWSSSSE(SW|NNNE)))$", 23),
             Arguments.arguments("^WSSEESWWWNW(S|NENNEEEENN(ESSSSW(NWSW|SSEN)|WSWWN(E|WWS(E|SS))))$", 31),
             Arguments.arguments("^$", 0),
+            Arguments.arguments("^(NEWS|)$", 2),
             Arguments.arguments("^NNNN(E|WW)NNNN$", 10),
-            Arguments.arguments("^EEEE(N|EENWW)NNNN$", 9)
+            Arguments.arguments("^EEEE(N|EENWW)NNNN$", 9),
+            // from reddit
+            Arguments.arguments("^E(NN|S)E$", 4),
+            Arguments.arguments("^(N|S)N$", 2),
+            Arguments.arguments("^EEE(NN|SSS)EEE$", 9),
+            Arguments.arguments("^E(N|SS)EEE(E|SSS)$", 9),
+            Arguments.arguments("^(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)(N|S|E|W)$", 93)
         )
     }
 }
