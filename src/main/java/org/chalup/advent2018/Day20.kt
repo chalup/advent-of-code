@@ -10,6 +10,10 @@ object Day20 {
         .values
         .max()!!
 
+    fun part2(input: String): Int = traverse(input)
+        .values
+        .count { it >= 1000 }
+
     fun traverse(input: String): Map<Point, Int> {
         val distances = mutableMapOf(Point(0, 0) to 0)
 
