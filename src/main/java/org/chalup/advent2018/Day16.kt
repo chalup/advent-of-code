@@ -1,6 +1,7 @@
 package org.chalup.advent2018
 
 import org.chalup.advent2018.Cpu.Opcode
+import org.chalup.utils.parseNumbers
 
 object Day16 {
     data class TestResult(val opcodeNumber: Int,
@@ -17,12 +18,6 @@ object Day16 {
     data class TestInput(val before: List<Int>,
                          val data: List<Int>,
                          val after: List<Int>)
-
-    fun parseNumbers(input: String) =
-        "\\d+".toRegex()
-            .findAll(input)
-            .map { it.value.toInt() }
-            .toList()
 
     fun parseTestInput(lines: List<String>): List<TestInput> =
         lines

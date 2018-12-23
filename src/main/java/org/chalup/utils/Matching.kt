@@ -19,3 +19,9 @@ class Matcher<T : Any>(private val input: String) {
         result = result ?: block(input)
     }
 }
+
+fun parseNumbers(input: String) =
+    "-?\\d+".toRegex()
+        .findAll(input)
+        .map { it.value.toInt() }
+        .toList()
