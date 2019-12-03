@@ -1,6 +1,9 @@
 package org.chalup.utils
 
-data class Point(val x: Int, val y: Int)
+data class Point(val x: Int, val y: Int) {
+    override fun toString() = "($x, $y)"
+}
+
 data class Rect(val topLeft: Point, val bottomRight: Point) {
     constructor(left: Int, top: Int, right: Int, bottom: Int) : this(Point(left, top),
                                                                      Point(right, bottom))
