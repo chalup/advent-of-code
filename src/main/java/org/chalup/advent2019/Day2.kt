@@ -1,14 +1,17 @@
 package org.chalup.advent2019
 
-object Day2 {
-    class IntcodeInterpreter(initialProgram: List<Int>) {
-        private val memory = initialProgram.toMutableList()
+import org.chalup.advent2019.Day2.IntcodeInterpreter.ProgramResult.ExecutionError.UnknownOpcode
+import org.chalup.advent2019.Day2.IntcodeInterpreter.ProgramResult.Finished
+import org.chalup.utils.times
 
-        fun execute() {
+object Day2 {
+    object IntcodeInterpreter {
+        fun execute(program: List<Int>): ProgramResult {
+            val memory = program.toMutableList()
             var ip = 0
 
             while (true) {
-                when (val opcode = memory[ip]) {
+                when (memory[ip]) {
                     1 -> {
                         memory[memory[ip + 3]] = memory[memory[ip + 1]] + memory[memory[ip + 2]]
                         ip += 4
@@ -17,45 +20,48 @@ object Day2 {
                         memory[memory[ip + 3]] = memory[memory[ip + 1]] * memory[memory[ip + 2]]
                         ip += 4
                     }
-                    99 -> return
-                    else -> throw IllegalStateException("Unknown opcode $opcode at $ip")
+                    99 -> return Finished(finalState = memory)
+                    else -> return UnknownOpcode(ip, dump = memory)
                 }
             }
         }
 
-        operator fun get(index: Int) = memory[index]
-        operator fun set(index: Int, value: Int) = memory.set(index, value)
+        sealed class ProgramResult {
+            sealed class ExecutionError : ProgramResult() {
+                data class UnknownOpcode(val ip: Int, val dump: List<Int>) : ExecutionError()
+            }
 
-        fun dump(): List<Int> = memory
+            data class Finished(val finalState: List<Int>) : ProgramResult()
+        }
     }
 
-    fun parseProgram(input: String) = IntcodeInterpreter(input.split(",").map { it.toInt() })
+    fun parseProgram(input: String) = input.split(",").map { it.toInt() }
 
-    fun task1(input: String): Int = parseProgram(input).run {
-        set(1, 12)
-        set(2, 2)
-
-        execute()
-
-        get(0)
+    private fun List<Int>.tweak(noun: Int, verb: Int): List<Int> = toMutableList().apply {
+        set(1, noun)
+        set(2, verb)
     }
 
-    fun task2(input: String): Int {
-        for (noun in 0..99) {
-            for (verb in 0..99) {
-                runCatching {
-                    parseProgram(input).run {
-                        set(1, noun)
-                        set(2, verb)
-
-                        execute()
-
-                        if (get(0) == 19690720) return noun * 100 + verb
-                    }
-                }
+    fun task1(input: String): Int = parseProgram(input)
+        .tweak(noun = 12, verb = 2)
+        .let {
+            when (val result = IntcodeInterpreter.execute(it)) {
+                is UnknownOpcode -> throw IllegalStateException("Unknown opcode ${result.dump[result.ip]} at ${result.ip}")
+                is Finished -> result.finalState[0]
             }
         }
 
-        throw IllegalArgumentException("Cannot find the noun & verb for the supplied program and desired output")
+    fun task2(input: String, expectedOutput: Int): Int {
+        val program = parseProgram(input)
+
+        return ((0..99) * (0..99))
+            .firstOrNull { (noun, verb) ->
+                when (val result = IntcodeInterpreter.execute(program.tweak(noun, verb))) {
+                    is UnknownOpcode -> false
+                    is Finished -> result.finalState[0] == expectedOutput
+                }
+            }
+            ?.let { (noun, verb) -> noun * 100 + verb }
+            ?: throw IllegalArgumentException("Cannot find the noun & verb for the supplied program and desired output")
     }
 }

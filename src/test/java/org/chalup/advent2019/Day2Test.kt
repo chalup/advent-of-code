@@ -1,6 +1,8 @@
 package org.chalup.advent2019
 
 import com.google.common.truth.Truth
+import org.chalup.advent2019.Day2.IntcodeInterpreter
+import org.chalup.advent2019.Day2.IntcodeInterpreter.ProgramResult.Finished
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
@@ -10,8 +12,8 @@ internal class Day2Test {
     @MethodSource("programExecutionData")
     fun `should execute program`(input: String, expectedOutput: String) {
         Truth
-            .assertThat(Day2.parseProgram(input).apply { execute() }.dump())
-            .isEqualTo(Day2.parseProgram(expectedOutput).dump())
+            .assertThat(Day2.parseProgram(input).let { IntcodeInterpreter.execute(it) as Finished }.finalState)
+            .isEqualTo(Day2.parseProgram(expectedOutput))
     }
 
     companion object {
