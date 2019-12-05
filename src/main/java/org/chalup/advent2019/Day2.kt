@@ -1,35 +1,35 @@
 package org.chalup.advent2019
 
 object Day2 {
-    class IntcodeProgram(initialProgram: List<Int>) {
-        private val program = initialProgram.toMutableList()
+    class IntcodeInterpreter(initialProgram: List<Int>) {
+        private val memory = initialProgram.toMutableList()
 
         fun execute() {
-            var pc = 0
+            var ip = 0
 
             while (true) {
-                when (val opcode = program[pc]) {
+                when (val opcode = memory[ip]) {
                     1 -> {
-                        program[program[pc + 3]] = program[program[pc + 1]] + program[program[pc + 2]]
-                        pc += 4
+                        memory[memory[ip + 3]] = memory[memory[ip + 1]] + memory[memory[ip + 2]]
+                        ip += 4
                     }
                     2 -> {
-                        program[program[pc + 3]] = program[program[pc + 1]] * program[program[pc + 2]]
-                        pc += 4
+                        memory[memory[ip + 3]] = memory[memory[ip + 1]] * memory[memory[ip + 2]]
+                        ip += 4
                     }
                     99 -> return
-                    else -> throw IllegalStateException("Unknown opcode $opcode at $pc")
+                    else -> throw IllegalStateException("Unknown opcode $opcode at $ip")
                 }
             }
         }
 
-        operator fun get(index: Int) = program[index]
-        operator fun set(index: Int, value: Int) = program.set(index, value)
+        operator fun get(index: Int) = memory[index]
+        operator fun set(index: Int, value: Int) = memory.set(index, value)
 
-        fun dump(): List<Int> = program
+        fun dump(): List<Int> = memory
     }
 
-    fun parseProgram(input: String) = IntcodeProgram(input.split(",").map { it.toInt() })
+    fun parseProgram(input: String) = IntcodeInterpreter(input.split(",").map { it.toInt() })
 
     fun task1(input: String): Int = parseProgram(input).run {
         set(1, 12)
