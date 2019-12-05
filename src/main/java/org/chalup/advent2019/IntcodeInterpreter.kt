@@ -62,6 +62,16 @@ object IntcodeInterpreter {
                 outputs += inParam(1)
                 ip += 2
             }),
+            JUMP_TRUE(opcode = 5, action = {
+                if (inParam(1) != 0) ip = inParam(2)
+                else ip += 3
+            }),
+            JUMP_FALSE(opcode = 6, action = {
+                if (inParam(1) == 0) ip = inParam(2)
+                else ip += 3
+            }),
+            LESS_THAN(opcode = 7, action = { outParam(3).set(if (inParam(1) < inParam(2)) 1 else 0).also { ip += 4 } }),
+            EQUALS(opcode = 8, action = { outParam(3).set(if (inParam(1) == inParam(2)) 1 else 0).also { ip += 4 } }),
             HALT(opcode = 99, action = { status = Halted });
 
             fun execute(state: State) = action(state)
