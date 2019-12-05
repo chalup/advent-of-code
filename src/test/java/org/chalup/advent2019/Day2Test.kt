@@ -1,8 +1,7 @@
 package org.chalup.advent2019
 
 import com.google.common.truth.Truth
-import org.chalup.advent2019.Day2.IntcodeInterpreter
-import org.chalup.advent2019.Day2.IntcodeInterpreter.ProgramResult.Finished
+import org.chalup.advent2019.IntcodeInterpreter.ProgramResult.Finished
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
