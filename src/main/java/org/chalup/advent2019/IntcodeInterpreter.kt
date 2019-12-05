@@ -2,6 +2,7 @@ package org.chalup.advent2019
 
 import org.chalup.advent2019.IntcodeInterpreter.InterpreterStatus.Halted
 import org.chalup.advent2019.IntcodeInterpreter.InterpreterStatus.InterpreterError
+import org.chalup.advent2019.IntcodeInterpreter.InterpreterStatus.InterpreterError.InInstructionWithoutInput
 import org.chalup.advent2019.IntcodeInterpreter.InterpreterStatus.InterpreterError.OutParamWithImmediateMode
 import org.chalup.advent2019.IntcodeInterpreter.InterpreterStatus.InterpreterError.UnknownOpcode
 import org.chalup.advent2019.IntcodeInterpreter.InterpreterStatus.Running
@@ -12,7 +13,9 @@ import org.chalup.advent2019.IntcodeInterpreter.State.ParameterMode.POSITION
 
 object IntcodeInterpreter {
     private class State(var ip: Int,
+                        val input: Int?,
                         val memory: MutableList<Int>,
+                        val outputs: MutableList<Int> = mutableListOf(),
                         var status: InterpreterStatus = Running) {
 
         fun inParam(n: Int): Int = when (paramMode(n)) {
@@ -51,6 +54,14 @@ object IntcodeInterpreter {
         enum class Instruction(private val opcode: Int, private val action: State.() -> Unit) {
             ADD(opcode = 1, action = { outParam(3).set(inParam(1) + inParam(2)).also { ip += 4 } }),
             MUL(opcode = 2, action = { outParam(3).set(inParam(1) * inParam(2)).also { ip += 4 } }),
+            IN(opcode = 3, action = {
+                if (input == null) status = InInstructionWithoutInput(ip, memory)
+                else outParam(1).set(input).also { ip += 2 }
+            }),
+            OUT(opcode = 4, action = {
+                outputs += inParam(1)
+                ip += 2
+            }),
             HALT(opcode = 99, action = { status = Halted });
 
             fun execute(state: State) = action(state)
@@ -68,16 +79,19 @@ object IntcodeInterpreter {
         sealed class InterpreterError : InterpreterStatus() {
             data class OutParamWithImmediateMode(val ip: Int, val opcode: Int, val n: Int, val dump: List<Int>) : InterpreterError()
             data class UnknownOpcode(val ip: Int, val opcode: Int, val dump: List<Int>) : InterpreterError()
+            data class InInstructionWithoutInput(val ip: Int, val dump: List<Int>) : InterpreterError()
         }
     }
 
-    fun execute(program: List<Int>): ProgramResult {
-        val state = State(ip = 0, memory = program.toMutableList())
+    fun execute(program: List<Int>, input: Int? = null): ProgramResult {
+        val state = State(ip = 0,
+                          input = input,
+                          memory = program.toMutableList())
 
         while (true) {
             when (val status = state.status) {
                 Running -> state.fetchInstruction()?.execute(state)
-                Halted -> return Finished(finalState = state.memory)
+                Halted -> return Finished(finalState = state.memory, outputs = state.outputs)
                 is InterpreterError -> return ExecutionError(error = status)
             }
         }
@@ -88,9 +102,11 @@ object IntcodeInterpreter {
             fun getErrorMessage(): String = when (error) {
                 is OutParamWithImmediateMode -> "Found outparam in immediate mode [param #${error.n} in opcode ${error.opcode} at ${error.ip}]. Full dump: ${error.dump}"
                 is UnknownOpcode -> "Unknown opcode ${error.opcode} at ${error.ip} in ${error.dump}"
+                is InInstructionWithoutInput -> "Found IN instruction (opcode 3) at ${error.ip}, but the input was not provided to the interpreter. Full dump: ${error.dump}"
             }
         }
 
-        data class Finished(val finalState: List<Int>) : ProgramResult()
+        data class Finished(val finalState: List<Int>,
+                            val outputs: List<Int>) : ProgramResult()
     }
 }
