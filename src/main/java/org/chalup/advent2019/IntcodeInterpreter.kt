@@ -1,30 +1,52 @@
 package org.chalup.advent2019
 
 import org.chalup.advent2019.IntcodeInterpreter.InterpreterStatus.Halted
+import org.chalup.advent2019.IntcodeInterpreter.InterpreterStatus.InterpreterError
+import org.chalup.advent2019.IntcodeInterpreter.InterpreterStatus.InterpreterError.OutParamWithImmediateMode
+import org.chalup.advent2019.IntcodeInterpreter.InterpreterStatus.InterpreterError.UnknownOpcode
 import org.chalup.advent2019.IntcodeInterpreter.InterpreterStatus.Running
-import org.chalup.advent2019.IntcodeInterpreter.ProgramResult.ExecutionError.UnknownOpcode
+import org.chalup.advent2019.IntcodeInterpreter.ProgramResult.ExecutionError
 import org.chalup.advent2019.IntcodeInterpreter.ProgramResult.Finished
+import org.chalup.advent2019.IntcodeInterpreter.State.ParameterMode.IMMEDIATE
+import org.chalup.advent2019.IntcodeInterpreter.State.ParameterMode.POSITION
 
 object IntcodeInterpreter {
     private class State(var ip: Int,
                         val memory: MutableList<Int>,
                         var status: InterpreterStatus = Running) {
 
-        fun inParam(n: Int): Int = memory[memory[ip + n]]
-        fun outParam(n: Int): OutParam = OutParam(memory[ip + n])
+        fun inParam(n: Int): Int = when (paramMode(n)) {
+            IMMEDIATE -> memory[ip + n]
+            POSITION -> memory[memory[ip + n]]
+        }
+
+        fun outParam(n: Int) = OutParam(n)
+
+        private fun paramMode(n: Int) = memory[ip].let {
+            var flag = it
+
+            repeat(n + 1) { flag /= 10 }
+
+            if (flag % 10 == 0) POSITION else IMMEDIATE
+        }
 
         private fun fetchOpcode(): Int = memory[ip] % 100
 
         fun fetchInstruction(): Instruction? = fetchOpcode()
             .let { opcode ->
-                Instruction.fromOpcode(opcode).also { if (it == null) status = InterpreterStatus.UnknownOpcode(ip, opcode, memory) }
+                Instruction.fromOpcode(opcode).also { if (it == null) status = UnknownOpcode(ip, opcode, memory) }
             }
 
-        inner class OutParam(val address: Int) {
+        inner class OutParam(val n: Int) {
             fun set(value: Int) {
-                memory[address] = value
+                when (paramMode(n)) {
+                    POSITION -> memory[memory[ip + n]] = value
+                    IMMEDIATE -> status = OutParamWithImmediateMode(ip, fetchOpcode(), n, memory)
+                }
             }
         }
+
+        private enum class ParameterMode { IMMEDIATE, POSITION }
 
         enum class Instruction(private val opcode: Int, private val action: State.() -> Unit) {
             ADD(opcode = 1, action = { outParam(3).set(inParam(1) + inParam(2)).also { ip += 4 } }),
@@ -42,7 +64,11 @@ object IntcodeInterpreter {
     sealed class InterpreterStatus {
         object Running : InterpreterStatus()
         object Halted : InterpreterStatus()
-        data class UnknownOpcode(val ip: Int, val opcode: Int, val dump: List<Int>) : InterpreterStatus()
+
+        sealed class InterpreterError : InterpreterStatus() {
+            data class OutParamWithImmediateMode(val ip: Int, val opcode: Int, val n: Int, val dump: List<Int>) : InterpreterError()
+            data class UnknownOpcode(val ip: Int, val opcode: Int, val dump: List<Int>) : InterpreterError()
+        }
     }
 
     fun execute(program: List<Int>): ProgramResult {
@@ -52,14 +78,17 @@ object IntcodeInterpreter {
             when (val status = state.status) {
                 Running -> state.fetchInstruction()?.execute(state)
                 Halted -> return Finished(finalState = state.memory)
-                is InterpreterStatus.UnknownOpcode -> return UnknownOpcode(status.ip, status.opcode, status.dump)
+                is InterpreterError -> return ExecutionError(error = status)
             }
         }
     }
 
     sealed class ProgramResult {
-        sealed class ExecutionError : ProgramResult() {
-            data class UnknownOpcode(val ip: Int, val opcode: Int, val dump: List<Int>) : ExecutionError()
+        data class ExecutionError(val error: InterpreterError) : ProgramResult() {
+            fun getErrorMessage(): String = when (error) {
+                is OutParamWithImmediateMode -> "Found outparam in immediate mode [param #${error.n} in opcode ${error.opcode} at ${error.ip}]. Full dump: ${error.dump}"
+                is UnknownOpcode -> "Unknown opcode ${error.opcode} at ${error.ip} in ${error.dump}"
+            }
         }
 
         data class Finished(val finalState: List<Int>) : ProgramResult()

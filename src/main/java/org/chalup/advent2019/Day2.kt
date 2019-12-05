@@ -1,6 +1,6 @@
 package org.chalup.advent2019
 
-import org.chalup.advent2019.IntcodeInterpreter.ProgramResult.ExecutionError.UnknownOpcode
+import org.chalup.advent2019.IntcodeInterpreter.ProgramResult.ExecutionError
 import org.chalup.advent2019.IntcodeInterpreter.ProgramResult.Finished
 import org.chalup.utils.times
 
@@ -16,7 +16,7 @@ object Day2 {
         .tweak(noun = 12, verb = 2)
         .let {
             when (val result = IntcodeInterpreter.execute(it)) {
-                is UnknownOpcode -> throw IllegalStateException("Unknown opcode ${result.opcode} at ${result.ip} in ${result.dump}")
+                is ExecutionError -> throw IllegalStateException(result.getErrorMessage())
                 is Finished -> result.finalState[0]
             }
         }
@@ -27,7 +27,7 @@ object Day2 {
         return ((0..99) * (0..99))
             .firstOrNull { (noun, verb) ->
                 when (val result = IntcodeInterpreter.execute(program.tweak(noun, verb))) {
-                    is UnknownOpcode -> false
+                    is ExecutionError -> false
                     is Finished -> result.finalState[0] == expectedOutput
                 }
             }
