@@ -16,7 +16,7 @@ object Day2 {
         .tweak(noun = 12, verb = 2)
         .let {
             when (val result = IntcodeInterpreter.execute(it)) {
-                is UnknownOpcode -> throw IllegalStateException("Unknown opcode ${result.dump[result.ip]} at ${result.ip}")
+                is UnknownOpcode -> throw IllegalStateException("Unknown opcode ${result.opcode} at ${result.ip} in ${result.dump}")
                 is Finished -> result.finalState[0]
             }
         }
