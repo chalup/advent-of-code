@@ -11,7 +11,7 @@ object Day5 {
 
     private fun runDiagnostics(systemId: Int, programInput: String) =
         parseProgram(programInput).let { program ->
-            when (val result = IntcodeInterpreter.execute(program, input = systemId)) {
+            when (val result = IntcodeInterpreter.execute(program, systemId)) {
                 is ExecutionError -> throw IllegalStateException(result.getErrorMessage())
                 is Finished -> result.outputs
             }

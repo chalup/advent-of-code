@@ -13,7 +13,7 @@ import org.chalup.advent2019.IntcodeInterpreter.State.ParameterMode.POSITION
 
 object IntcodeInterpreter {
     private class State(var ip: Int,
-                        val input: Int?,
+                        val inputs: MutableList<Int> = mutableListOf(),
                         val memory: MutableList<Int>,
                         val outputs: MutableList<Int> = mutableListOf(),
                         var status: InterpreterStatus = Running) {
@@ -55,8 +55,8 @@ object IntcodeInterpreter {
             ADD(opcode = 1, action = { outParam(3).set(inParam(1) + inParam(2)).also { ip += 4 } }),
             MUL(opcode = 2, action = { outParam(3).set(inParam(1) * inParam(2)).also { ip += 4 } }),
             IN(opcode = 3, action = {
-                if (input == null) status = InInstructionWithoutInput(ip, memory)
-                else outParam(1).set(input).also { ip += 2 }
+                if (inputs.isEmpty()) status = InInstructionWithoutInput(ip, memory)
+                else outParam(1).set(inputs.removeAt(0)).also { ip += 2 }
             }),
             OUT(opcode = 4, action = {
                 outputs += inParam(1)
@@ -93,9 +93,9 @@ object IntcodeInterpreter {
         }
     }
 
-    fun execute(program: List<Int>, input: Int? = null): ProgramResult {
+    fun execute(program: List<Int>, vararg inputs: Int): ProgramResult {
         val state = State(ip = 0,
-                          input = input,
+                          inputs = inputs.toMutableList(),
                           memory = program.toMutableList())
 
         while (true) {
