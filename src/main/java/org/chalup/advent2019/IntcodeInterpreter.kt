@@ -21,13 +21,12 @@ class IntcodeInterpreter(initialProgram: List<Int>) {
 
     fun sendInput(input: Int) = inputs.add(input)
 
-
-    fun inParam(n: Int): Int = when (paramMode(n)) {
+    private fun inParam(n: Int): Int = when (paramMode(n)) {
         IMMEDIATE -> memory[ip + n]
         POSITION -> memory[memory[ip + n]]
     }
 
-    fun outParam(n: Int) = OutParam(n)
+    private fun outParam(n: Int) = OutParam(n)
 
     private fun paramMode(n: Int) = memory[ip].let {
         var flag = it
@@ -39,12 +38,12 @@ class IntcodeInterpreter(initialProgram: List<Int>) {
 
     private fun fetchOpcode(): Int = memory[ip] % 100
 
-    fun fetchInstruction(): Instruction? = fetchOpcode()
+    private fun fetchInstruction(): Instruction? = fetchOpcode()
         .let { opcode ->
             Instruction.fromOpcode(opcode).also { if (it == null) status = UnknownOpcode(ip, opcode, memory) }
         }
 
-    inner class OutParam(val n: Int) {
+    private inner class OutParam(val n: Int) {
         fun set(value: Int) {
             when (paramMode(n)) {
                 POSITION -> memory[memory[ip + n]] = value
@@ -55,7 +54,7 @@ class IntcodeInterpreter(initialProgram: List<Int>) {
 
     private enum class ParameterMode { IMMEDIATE, POSITION }
 
-    enum class Instruction(private val opcode: Int, private val action: IntcodeInterpreter.() -> Unit) {
+    private enum class Instruction(private val opcode: Int, private val action: IntcodeInterpreter.() -> Unit) {
         ADD(opcode = 1, action = { outParam(3).set(inParam(1) + inParam(2)).also { ip += 4 } }),
         MUL(opcode = 2, action = { outParam(3).set(inParam(1) * inParam(2)).also { ip += 4 } }),
         IN(opcode = 3, action = {
