@@ -30,6 +30,7 @@ fun main(args: Array<String>) {
         advent(day = 6, part = 1) { input -> Day6.task1(input()) }
         advent(day = 6, part = 2) { input -> Day6.task2(input()) }
         advent(day = 7, part = 1) { input -> Day7.calculateMaxThrusterInput(input().first()) }
+        advent(day = 8, part = 1) { input -> Day8.task1(input().first(), width = 25, height = 6) }
     }
 
     println("=== TOTAL [${elapsedTotal}ms] ===")
