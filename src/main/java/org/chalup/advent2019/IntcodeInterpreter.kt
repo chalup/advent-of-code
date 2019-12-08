@@ -10,12 +10,14 @@ import org.chalup.advent2019.IntcodeInterpreter.ProgramResult.ExecutionError
 import org.chalup.advent2019.IntcodeInterpreter.ProgramResult.Finished
 import org.chalup.advent2019.IntcodeInterpreter.State.ParameterMode.IMMEDIATE
 import org.chalup.advent2019.IntcodeInterpreter.State.ParameterMode.POSITION
+import java.util.concurrent.BlockingQueue
+import java.util.concurrent.LinkedBlockingQueue
 
 object IntcodeInterpreter {
     private class State(var ip: Int,
-                        val inputs: MutableList<Int> = mutableListOf(),
+                        val inputs: BlockingQueue<Int>,
                         val memory: MutableList<Int>,
-                        val outputs: MutableList<Int> = mutableListOf(),
+                        val outputs: BlockingQueue<Int>,
                         var status: InterpreterStatus = Running) {
 
         fun inParam(n: Int): Int = when (paramMode(n)) {
@@ -55,11 +57,10 @@ object IntcodeInterpreter {
             ADD(opcode = 1, action = { outParam(3).set(inParam(1) + inParam(2)).also { ip += 4 } }),
             MUL(opcode = 2, action = { outParam(3).set(inParam(1) * inParam(2)).also { ip += 4 } }),
             IN(opcode = 3, action = {
-                if (inputs.isEmpty()) status = InInstructionWithoutInput(ip, memory)
-                else outParam(1).set(inputs.removeAt(0)).also { ip += 2 }
+                outParam(1).set(inputs.take()).also { ip += 2 }
             }),
             OUT(opcode = 4, action = {
-                outputs += inParam(1)
+                outputs.put(inParam(1))
                 ip += 2
             }),
             JUMP_TRUE(opcode = 5, action = {
@@ -93,15 +94,18 @@ object IntcodeInterpreter {
         }
     }
 
-    fun execute(program: List<Int>, vararg inputs: Int): ProgramResult {
+    fun execute(program: List<Int>,
+                inputs: BlockingQueue<Int> = LinkedBlockingQueue(),
+                outputs: BlockingQueue<Int> = LinkedBlockingQueue()): ProgramResult {
         val state = State(ip = 0,
-                          inputs = inputs.toMutableList(),
+                          inputs = inputs,
+                          outputs = outputs,
                           memory = program.toMutableList())
 
         while (true) {
             when (val status = state.status) {
                 Running -> state.fetchInstruction()?.execute(state)
-                Halted -> return Finished(finalState = state.memory, outputs = state.outputs)
+                Halted -> return Finished(finalState = state.memory)
                 is InterpreterError -> return ExecutionError(error = status)
             }
         }
@@ -116,7 +120,6 @@ object IntcodeInterpreter {
             }
         }
 
-        data class Finished(val finalState: List<Int>,
-                            val outputs: List<Int>) : ProgramResult()
+        data class Finished(val finalState: List<Int>) : ProgramResult()
     }
 }

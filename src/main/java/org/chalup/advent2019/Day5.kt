@@ -2,6 +2,7 @@ package org.chalup.advent2019
 
 import org.chalup.advent2019.IntcodeInterpreter.ProgramResult.ExecutionError
 import org.chalup.advent2019.IntcodeInterpreter.ProgramResult.Finished
+import java.util.concurrent.LinkedBlockingQueue
 
 object Day5 {
     fun task1(input: String) = runDiagnostics(programInput = input, systemId = 1)
@@ -9,11 +10,14 @@ object Day5 {
 
     private fun parseProgram(input: String) = input.split(",").map { it.toInt() }
 
-    private fun runDiagnostics(systemId: Int, programInput: String) =
+    private fun runDiagnostics(systemId: Int, programInput: String): Int =
         parseProgram(programInput).let { program ->
-            when (val result = IntcodeInterpreter.execute(program, systemId)) {
+            val input = LinkedBlockingQueue(listOf(systemId))
+            val output = LinkedBlockingQueue<Int>()
+
+            when (val result = IntcodeInterpreter.execute(program, input, output)) {
                 is ExecutionError -> throw IllegalStateException(result.getErrorMessage())
-                is Finished -> result.outputs
+                is Finished -> output.last()
             }
         }
 }

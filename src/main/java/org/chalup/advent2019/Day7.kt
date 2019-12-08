@@ -2,6 +2,8 @@ package org.chalup.advent2019
 
 import org.chalup.advent2019.IntcodeInterpreter.ProgramResult.ExecutionError
 import org.chalup.advent2019.IntcodeInterpreter.ProgramResult.Finished
+import java.util.concurrent.BlockingQueue
+import java.util.concurrent.LinkedBlockingQueue
 
 object Day7 {
     fun calculateMaxThrusterInput(programInput: String): Int {
@@ -16,8 +18,11 @@ object Day7 {
 
     private fun calculateThrust(program: List<Int>, phaseConfig: List<Int>): Int {
         return phaseConfig.fold(0) { signal, phase ->
-            when (val result = IntcodeInterpreter.execute(program, phase, signal)) {
-                is Finished -> result.outputs.first()
+            val input = LinkedBlockingQueue<Int>(listOf(phase, signal))
+            val output = LinkedBlockingQueue<Int>()
+
+            when (val result = IntcodeInterpreter.execute(program, input, output)) {
+                is Finished -> output.take()
                 is ExecutionError -> throw IllegalStateException(result.getErrorMessage())
             }
         }
