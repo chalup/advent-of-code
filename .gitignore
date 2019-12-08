@@ -1,13 +1,7 @@
 *.iml
 .gradle
 
-.idea/workspace.xml
-.idea/usage.statistics.xml
-.idea/tasks.xml
-
-.idea/libraries
-.idea/modules.xml
-.idea/gradle.xml
+.idea
 
 .DS_Store
 
