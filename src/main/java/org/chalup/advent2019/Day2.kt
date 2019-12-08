@@ -2,6 +2,7 @@ package org.chalup.advent2019
 
 import org.chalup.advent2019.IntcodeInterpreter.ProgramResult.ExecutionError
 import org.chalup.advent2019.IntcodeInterpreter.ProgramResult.Finished
+import org.chalup.advent2019.IntcodeInterpreter.ProgramResult.GeneratedOutput
 import org.chalup.utils.times
 
 object Day2 {
@@ -15,9 +16,10 @@ object Day2 {
     fun task1(input: String): Int = parseProgram(input)
         .tweak(noun = 12, verb = 2)
         .let {
-            when (val result = IntcodeInterpreter.execute(it)) {
+            when (val result = IntcodeInterpreter(it).run()) {
                 is ExecutionError -> throw IllegalStateException(result.getErrorMessage())
                 is Finished -> result.finalState[0]
+                is GeneratedOutput -> throw IllegalStateException("Didn't expect any output from this program")
             }
         }
 
@@ -26,9 +28,10 @@ object Day2 {
 
         return ((0..99) * (0..99))
             .firstOrNull { (noun, verb) ->
-                when (val result = IntcodeInterpreter.execute(program.tweak(noun, verb))) {
+                when (val result = IntcodeInterpreter(program.tweak(noun, verb)).run()) {
                     is ExecutionError -> false
                     is Finished -> result.finalState[0] == expectedOutput
+                    is GeneratedOutput -> false
                 }
             }
             ?.let { (noun, verb) -> noun * 100 + verb }

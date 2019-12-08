@@ -1,91 +1,94 @@
 package org.chalup.advent2019
 
+import org.chalup.advent2019.IntcodeInterpreter.InterpreterStatus.EmittingOutput
 import org.chalup.advent2019.IntcodeInterpreter.InterpreterStatus.Halted
 import org.chalup.advent2019.IntcodeInterpreter.InterpreterStatus.InterpreterError
 import org.chalup.advent2019.IntcodeInterpreter.InterpreterStatus.InterpreterError.InInstructionWithoutInput
 import org.chalup.advent2019.IntcodeInterpreter.InterpreterStatus.InterpreterError.OutParamWithImmediateMode
 import org.chalup.advent2019.IntcodeInterpreter.InterpreterStatus.InterpreterError.UnknownOpcode
 import org.chalup.advent2019.IntcodeInterpreter.InterpreterStatus.Running
+import org.chalup.advent2019.IntcodeInterpreter.ParameterMode.IMMEDIATE
+import org.chalup.advent2019.IntcodeInterpreter.ParameterMode.POSITION
 import org.chalup.advent2019.IntcodeInterpreter.ProgramResult.ExecutionError
 import org.chalup.advent2019.IntcodeInterpreter.ProgramResult.Finished
-import org.chalup.advent2019.IntcodeInterpreter.State.ParameterMode.IMMEDIATE
-import org.chalup.advent2019.IntcodeInterpreter.State.ParameterMode.POSITION
-import java.util.concurrent.BlockingQueue
-import java.util.concurrent.LinkedBlockingQueue
+import org.chalup.advent2019.IntcodeInterpreter.ProgramResult.GeneratedOutput
 
-object IntcodeInterpreter {
-    private class State(var ip: Int,
-                        val inputs: BlockingQueue<Int>,
-                        val memory: MutableList<Int>,
-                        val outputs: BlockingQueue<Int>,
-                        var status: InterpreterStatus = Running) {
+class IntcodeInterpreter(initialProgram: List<Int>) {
+    private var ip: Int = 0
+    private val inputs: MutableList<Int> = mutableListOf()
+    private val memory: MutableList<Int> = initialProgram.toMutableList()
+    private var status: InterpreterStatus = Running
 
-        fun inParam(n: Int): Int = when (paramMode(n)) {
-            IMMEDIATE -> memory[ip + n]
-            POSITION -> memory[memory[ip + n]]
+    fun sendInput(input: Int) = inputs.add(input)
+
+
+    fun inParam(n: Int): Int = when (paramMode(n)) {
+        IMMEDIATE -> memory[ip + n]
+        POSITION -> memory[memory[ip + n]]
+    }
+
+    fun outParam(n: Int) = OutParam(n)
+
+    private fun paramMode(n: Int) = memory[ip].let {
+        var flag = it
+
+        repeat(n + 1) { flag /= 10 }
+
+        if (flag % 10 == 0) POSITION else IMMEDIATE
+    }
+
+    private fun fetchOpcode(): Int = memory[ip] % 100
+
+    fun fetchInstruction(): Instruction? = fetchOpcode()
+        .let { opcode ->
+            Instruction.fromOpcode(opcode).also { if (it == null) status = UnknownOpcode(ip, opcode, memory) }
         }
 
-        fun outParam(n: Int) = OutParam(n)
-
-        private fun paramMode(n: Int) = memory[ip].let {
-            var flag = it
-
-            repeat(n + 1) { flag /= 10 }
-
-            if (flag % 10 == 0) POSITION else IMMEDIATE
-        }
-
-        private fun fetchOpcode(): Int = memory[ip] % 100
-
-        fun fetchInstruction(): Instruction? = fetchOpcode()
-            .let { opcode ->
-                Instruction.fromOpcode(opcode).also { if (it == null) status = UnknownOpcode(ip, opcode, memory) }
-            }
-
-        inner class OutParam(val n: Int) {
-            fun set(value: Int) {
-                when (paramMode(n)) {
-                    POSITION -> memory[memory[ip + n]] = value
-                    IMMEDIATE -> status = OutParamWithImmediateMode(ip, fetchOpcode(), n, memory)
-                }
+    inner class OutParam(val n: Int) {
+        fun set(value: Int) {
+            when (paramMode(n)) {
+                POSITION -> memory[memory[ip + n]] = value
+                IMMEDIATE -> status = OutParamWithImmediateMode(ip, fetchOpcode(), n, memory)
             }
         }
+    }
 
-        private enum class ParameterMode { IMMEDIATE, POSITION }
+    private enum class ParameterMode { IMMEDIATE, POSITION }
 
-        enum class Instruction(private val opcode: Int, private val action: State.() -> Unit) {
-            ADD(opcode = 1, action = { outParam(3).set(inParam(1) + inParam(2)).also { ip += 4 } }),
-            MUL(opcode = 2, action = { outParam(3).set(inParam(1) * inParam(2)).also { ip += 4 } }),
-            IN(opcode = 3, action = {
-                outParam(1).set(inputs.take()).also { ip += 2 }
-            }),
-            OUT(opcode = 4, action = {
-                outputs.put(inParam(1))
-                ip += 2
-            }),
-            JUMP_TRUE(opcode = 5, action = {
-                if (inParam(1) != 0) ip = inParam(2)
-                else ip += 3
-            }),
-            JUMP_FALSE(opcode = 6, action = {
-                if (inParam(1) == 0) ip = inParam(2)
-                else ip += 3
-            }),
-            LESS_THAN(opcode = 7, action = { outParam(3).set(if (inParam(1) < inParam(2)) 1 else 0).also { ip += 4 } }),
-            EQUALS(opcode = 8, action = { outParam(3).set(if (inParam(1) == inParam(2)) 1 else 0).also { ip += 4 } }),
-            HALT(opcode = 99, action = { status = Halted });
+    enum class Instruction(private val opcode: Int, private val action: IntcodeInterpreter.() -> Unit) {
+        ADD(opcode = 1, action = { outParam(3).set(inParam(1) + inParam(2)).also { ip += 4 } }),
+        MUL(opcode = 2, action = { outParam(3).set(inParam(1) * inParam(2)).also { ip += 4 } }),
+        IN(opcode = 3, action = {
+            if (inputs.isEmpty()) { status = InInstructionWithoutInput(ip = ip, dump = memory) }
+            else outParam(1).set(inputs.removeAt(0)).also { ip += 2 }
+        }),
+        OUT(opcode = 4, action = {
+            status = EmittingOutput(output = inParam(1))
+            ip += 2
+        }),
+        JUMP_TRUE(opcode = 5, action = {
+            if (inParam(1) != 0) ip = inParam(2)
+            else ip += 3
+        }),
+        JUMP_FALSE(opcode = 6, action = {
+            if (inParam(1) == 0) ip = inParam(2)
+            else ip += 3
+        }),
+        LESS_THAN(opcode = 7, action = { outParam(3).set(if (inParam(1) < inParam(2)) 1 else 0).also { ip += 4 } }),
+        EQUALS(opcode = 8, action = { outParam(3).set(if (inParam(1) == inParam(2)) 1 else 0).also { ip += 4 } }),
+        HALT(opcode = 99, action = { status = Halted });
 
-            fun execute(state: State) = action(state)
+        fun execute(interpreter: IntcodeInterpreter) = action(interpreter)
 
-            companion object {
-                fun fromOpcode(opcode: Int) = values().firstOrNull { it.opcode == opcode }
-            }
+        companion object {
+            fun fromOpcode(opcode: Int) = values().firstOrNull { it.opcode == opcode }
         }
     }
 
     sealed class InterpreterStatus {
         object Running : InterpreterStatus()
         object Halted : InterpreterStatus()
+        data class EmittingOutput(val output: Int) : InterpreterStatus()
 
         sealed class InterpreterError : InterpreterStatus() {
             data class OutParamWithImmediateMode(val ip: Int, val opcode: Int, val n: Int, val dump: List<Int>) : InterpreterError()
@@ -94,18 +97,14 @@ object IntcodeInterpreter {
         }
     }
 
-    fun execute(program: List<Int>,
-                inputs: BlockingQueue<Int> = LinkedBlockingQueue(),
-                outputs: BlockingQueue<Int> = LinkedBlockingQueue()): ProgramResult {
-        val state = State(ip = 0,
-                          inputs = inputs,
-                          outputs = outputs,
-                          memory = program.toMutableList())
+    fun run(): ProgramResult {
+        if (status is EmittingOutput) status = Running
 
         while (true) {
-            when (val status = state.status) {
-                Running -> state.fetchInstruction()?.execute(state)
-                Halted -> return Finished(finalState = state.memory)
+            when (val status = status) {
+                Running -> fetchInstruction()?.execute(this)
+                is EmittingOutput -> return GeneratedOutput(status.output)
+                Halted -> return Finished(finalState = memory)
                 is InterpreterError -> return ExecutionError(error = status)
             }
         }
@@ -120,6 +119,7 @@ object IntcodeInterpreter {
             }
         }
 
+        data class GeneratedOutput(val output: Int) : ProgramResult()
         data class Finished(val finalState: List<Int>) : ProgramResult()
     }
 }

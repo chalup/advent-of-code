@@ -11,7 +11,7 @@ internal class Day2Test {
     @MethodSource("programExecutionData")
     fun `should execute program`(input: String, expectedOutput: String) {
         Truth
-            .assertThat(Day2.parseProgram(input).let { IntcodeInterpreter.execute(it) as Finished }.finalState)
+            .assertThat(Day2.parseProgram(input).let { IntcodeInterpreter(it).run() as Finished }.finalState)
             .isEqualTo(Day2.parseProgram(expectedOutput))
     }
 
