@@ -18,7 +18,7 @@ class IntcodeInterpreter(initialProgram: List<Long>) {
     private var ip: Long = 0
     private var relativeOffset: Long = 0
     private val inputs: MutableList<Long> = mutableListOf()
-    private val memory: MutableList<Long> = initialProgram.toMutableList()
+    private val memory: Memory = Memory(initialProgram)
     private var status: InterpreterStatus = Running
 
     fun sendInput(input: Long) = inputs.add(input)
@@ -51,11 +51,25 @@ class IntcodeInterpreter(initialProgram: List<Long>) {
     private inner class OutParam(val n: Int) {
         fun set(value: Long) {
             when (paramMode(n)) {
-                POSITION -> memory[memory[ip + n].toInt()] = value
+                POSITION -> memory[memory[ip + n]] = value
                 IMMEDIATE -> status = OutParamWithImmediateMode(ip, fetchOpcode(), n, memory)
-                RELATIVE -> memory[(memory[ip + n] + relativeOffset).toInt()] = value
+                RELATIVE -> memory[memory[ip + n] + relativeOffset] = value
             }
         }
+    }
+
+    class Memory(initialValues: List<Long>) {
+        private val data = initialValues.toMutableList()
+
+        operator fun get(address: Long): Long {
+            return data[address.toInt()]
+        }
+
+        operator fun set(address: Long, value: Long) {
+            data[address.toInt()] = value
+        }
+
+        override fun toString(): String = data.toString()
     }
 
     private enum class ParameterMode { IMMEDIATE, POSITION, RELATIVE }
@@ -98,9 +112,9 @@ class IntcodeInterpreter(initialProgram: List<Long>) {
         data class EmittingOutput(val output: Long) : InterpreterStatus()
 
         sealed class InterpreterError : InterpreterStatus() {
-            data class OutParamWithImmediateMode(val ip: Long, val opcode: Int, val n: Int, val dump: List<Long>) : InterpreterError()
-            data class UnknownOpcode(val ip: Long, val opcode: Int, val dump: List<Long>) : InterpreterError()
-            data class InInstructionWithoutInput(val ip: Long, val dump: List<Long>) : InterpreterError()
+            data class OutParamWithImmediateMode(val ip: Long, val opcode: Int, val n: Int, val dump: Memory) : InterpreterError()
+            data class UnknownOpcode(val ip: Long, val opcode: Int, val dump: Memory) : InterpreterError()
+            data class InInstructionWithoutInput(val ip: Long, val dump: Memory) : InterpreterError()
         }
     }
 
@@ -127,7 +141,7 @@ class IntcodeInterpreter(initialProgram: List<Long>) {
         }
 
         data class GeneratedOutput(val output: Long) : ProgramResult()
-        data class Finished(val finalState: List<Long>) : ProgramResult()
+        data class Finished(val finalState: Memory) : ProgramResult()
     }
 
     companion object {
