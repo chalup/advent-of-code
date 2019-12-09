@@ -1,13 +1,12 @@
 package org.chalup.advent2019
 
+import org.chalup.advent2019.IntcodeInterpreter.Companion.parseProgram
 import org.chalup.advent2019.IntcodeInterpreter.ProgramResult.ExecutionError
 import org.chalup.advent2019.IntcodeInterpreter.ProgramResult.Finished
 import org.chalup.advent2019.IntcodeInterpreter.ProgramResult.GeneratedOutput
 import org.chalup.utils.times
 
 object Day2 {
-    fun parseProgram(input: String) = input.split(",").map { it.toInt() }
-
     private fun List<Int>.tweak(noun: Int, verb: Int): List<Int> = toMutableList().apply {
         set(1, noun)
         set(2, verb)

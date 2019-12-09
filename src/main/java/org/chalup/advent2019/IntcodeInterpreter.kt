@@ -121,4 +121,21 @@ class IntcodeInterpreter(initialProgram: List<Int>) {
         data class GeneratedOutput(val output: Int) : ProgramResult()
         data class Finished(val finalState: List<Int>) : ProgramResult()
     }
+
+    companion object {
+        fun parseProgram(input: String) = input.split(",").map { it.toInt() }
+
+        fun runProgram(programInput: String, vararg inputs: Int): List<Int> {
+            val interpreter = IntcodeInterpreter(parseProgram(programInput)).apply { inputs.forEach { sendInput(it) } }
+            val outputs = mutableListOf<Int>()
+
+            while (true) {
+                when (val result = interpreter.run()) {
+                    is ExecutionError -> throw IllegalStateException(result.getErrorMessage())
+                    is GeneratedOutput -> outputs += result.output
+                    is Finished -> return outputs
+                }
+            }
+        }
+    }
 }
