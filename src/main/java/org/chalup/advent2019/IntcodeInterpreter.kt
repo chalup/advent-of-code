@@ -38,7 +38,12 @@ class IntcodeInterpreter(initialProgram: List<Long>) {
 
         repeat(n + 1) { flag /= 10 }
 
-        if (flag % 10 == 0L) POSITION else IMMEDIATE
+        when(val mode = flag % 10)  {
+            0L -> POSITION
+            1L -> IMMEDIATE
+            2L -> RELATIVE
+            else -> throw AssertionError("Unknown parameter mode $mode")
+        }
     }
 
     private fun fetchOpcode(): Int = (memory[ip] % 100).toInt()
