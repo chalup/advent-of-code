@@ -9,12 +9,14 @@ import org.chalup.advent2019.IntcodeInterpreter.InterpreterStatus.InterpreterErr
 import org.chalup.advent2019.IntcodeInterpreter.InterpreterStatus.Running
 import org.chalup.advent2019.IntcodeInterpreter.ParameterMode.IMMEDIATE
 import org.chalup.advent2019.IntcodeInterpreter.ParameterMode.POSITION
+import org.chalup.advent2019.IntcodeInterpreter.ParameterMode.RELATIVE
 import org.chalup.advent2019.IntcodeInterpreter.ProgramResult.ExecutionError
 import org.chalup.advent2019.IntcodeInterpreter.ProgramResult.Finished
 import org.chalup.advent2019.IntcodeInterpreter.ProgramResult.GeneratedOutput
 
 class IntcodeInterpreter(initialProgram: List<Long>) {
     private var ip: Long = 0
+    private var relativeOffset: Long = 0
     private val inputs: MutableList<Long> = mutableListOf()
     private val memory: MutableList<Long> = initialProgram.toMutableList()
     private var status: InterpreterStatus = Running
@@ -26,6 +28,7 @@ class IntcodeInterpreter(initialProgram: List<Long>) {
     private fun inParam(n: Int): Long = when (paramMode(n)) {
         IMMEDIATE -> memory[ip + n]
         POSITION -> memory[memory[ip + n]]
+        RELATIVE -> memory[memory[ip + n] + relativeOffset]
     }
 
     private fun outParam(n: Int) = OutParam(n)
@@ -50,11 +53,12 @@ class IntcodeInterpreter(initialProgram: List<Long>) {
             when (paramMode(n)) {
                 POSITION -> memory[memory[ip + n].toInt()] = value
                 IMMEDIATE -> status = OutParamWithImmediateMode(ip, fetchOpcode(), n, memory)
+                RELATIVE -> memory[(memory[ip + n] + relativeOffset).toInt()] = value
             }
         }
     }
 
-    private enum class ParameterMode { IMMEDIATE, POSITION }
+    private enum class ParameterMode { IMMEDIATE, POSITION, RELATIVE }
 
     private enum class Instruction(private val opcode: Int, private val action: IntcodeInterpreter.() -> Unit) {
         ADD(opcode = 1, action = { outParam(3).set(inParam(1) + inParam(2)).also { ip += 4 } }),
@@ -78,6 +82,7 @@ class IntcodeInterpreter(initialProgram: List<Long>) {
         }),
         LESS_THAN(opcode = 7, action = { outParam(3).set(if (inParam(1) < inParam(2)) 1 else 0).also { ip += 4 } }),
         EQUALS(opcode = 8, action = { outParam(3).set(if (inParam(1) == inParam(2)) 1 else 0).also { ip += 4 } }),
+        ADJUST_RELATIVE_OFFSET(opcode = 9, action = { relativeOffset += inParam(1); ip += 2 }),
         HALT(opcode = 99, action = { status = Halted });
 
         fun execute(interpreter: IntcodeInterpreter) = action(interpreter)
