@@ -13,15 +13,17 @@ import org.chalup.advent2019.IntcodeInterpreter.ProgramResult.ExecutionError
 import org.chalup.advent2019.IntcodeInterpreter.ProgramResult.Finished
 import org.chalup.advent2019.IntcodeInterpreter.ProgramResult.GeneratedOutput
 
-class IntcodeInterpreter(initialProgram: List<Int>) {
-    private var ip: Int = 0
-    private val inputs: MutableList<Int> = mutableListOf()
-    private val memory: MutableList<Int> = initialProgram.toMutableList()
+class IntcodeInterpreter(initialProgram: List<Long>) {
+    private var ip: Long = 0
+    private val inputs: MutableList<Long> = mutableListOf()
+    private val memory: MutableList<Long> = initialProgram.toMutableList()
     private var status: InterpreterStatus = Running
 
-    fun sendInput(input: Int) = inputs.add(input)
+    fun sendInput(input: Long) = inputs.add(input)
 
-    private fun inParam(n: Int): Int = when (paramMode(n)) {
+    private operator fun List<Long>.get(at: Long) = get(at.toInt())
+
+    private fun inParam(n: Int): Long = when (paramMode(n)) {
         IMMEDIATE -> memory[ip + n]
         POSITION -> memory[memory[ip + n]]
     }
@@ -33,10 +35,10 @@ class IntcodeInterpreter(initialProgram: List<Int>) {
 
         repeat(n + 1) { flag /= 10 }
 
-        if (flag % 10 == 0) POSITION else IMMEDIATE
+        if (flag % 10 == 0L) POSITION else IMMEDIATE
     }
 
-    private fun fetchOpcode(): Int = memory[ip] % 100
+    private fun fetchOpcode(): Int = (memory[ip] % 100).toInt()
 
     private fun fetchInstruction(): Instruction? = fetchOpcode()
         .let { opcode ->
@@ -44,9 +46,9 @@ class IntcodeInterpreter(initialProgram: List<Int>) {
         }
 
     private inner class OutParam(val n: Int) {
-        fun set(value: Int) {
+        fun set(value: Long) {
             when (paramMode(n)) {
-                POSITION -> memory[memory[ip + n]] = value
+                POSITION -> memory[memory[ip + n].toInt()] = value
                 IMMEDIATE -> status = OutParamWithImmediateMode(ip, fetchOpcode(), n, memory)
             }
         }
@@ -67,11 +69,11 @@ class IntcodeInterpreter(initialProgram: List<Int>) {
             ip += 2
         }),
         JUMP_TRUE(opcode = 5, action = {
-            if (inParam(1) != 0) ip = inParam(2)
+            if (inParam(1) != 0L) ip = inParam(2)
             else ip += 3
         }),
         JUMP_FALSE(opcode = 6, action = {
-            if (inParam(1) == 0) ip = inParam(2)
+            if (inParam(1) == 0L) ip = inParam(2)
             else ip += 3
         }),
         LESS_THAN(opcode = 7, action = { outParam(3).set(if (inParam(1) < inParam(2)) 1 else 0).also { ip += 4 } }),
@@ -88,12 +90,12 @@ class IntcodeInterpreter(initialProgram: List<Int>) {
     sealed class InterpreterStatus {
         object Running : InterpreterStatus()
         object Halted : InterpreterStatus()
-        data class EmittingOutput(val output: Int) : InterpreterStatus()
+        data class EmittingOutput(val output: Long) : InterpreterStatus()
 
         sealed class InterpreterError : InterpreterStatus() {
-            data class OutParamWithImmediateMode(val ip: Int, val opcode: Int, val n: Int, val dump: List<Int>) : InterpreterError()
-            data class UnknownOpcode(val ip: Int, val opcode: Int, val dump: List<Int>) : InterpreterError()
-            data class InInstructionWithoutInput(val ip: Int, val dump: List<Int>) : InterpreterError()
+            data class OutParamWithImmediateMode(val ip: Long, val opcode: Int, val n: Int, val dump: List<Long>) : InterpreterError()
+            data class UnknownOpcode(val ip: Long, val opcode: Int, val dump: List<Long>) : InterpreterError()
+            data class InInstructionWithoutInput(val ip: Long, val dump: List<Long>) : InterpreterError()
         }
     }
 
@@ -119,16 +121,16 @@ class IntcodeInterpreter(initialProgram: List<Int>) {
             }
         }
 
-        data class GeneratedOutput(val output: Int) : ProgramResult()
-        data class Finished(val finalState: List<Int>) : ProgramResult()
+        data class GeneratedOutput(val output: Long) : ProgramResult()
+        data class Finished(val finalState: List<Long>) : ProgramResult()
     }
 
     companion object {
-        fun parseProgram(input: String) = input.split(",").map { it.toInt() }
+        fun parseProgram(input: String) = input.split(",").map { it.toLong() }
 
-        fun runProgram(programInput: String, vararg inputs: Int): List<Int> {
+        fun runProgram(programInput: String, vararg inputs: Long): List<Long> {
             val interpreter = IntcodeInterpreter(parseProgram(programInput)).apply { inputs.forEach { sendInput(it) } }
-            val outputs = mutableListOf<Int>()
+            val outputs = mutableListOf<Long>()
 
             while (true) {
                 when (val result = interpreter.run()) {

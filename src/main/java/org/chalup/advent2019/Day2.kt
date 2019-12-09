@@ -7,12 +7,12 @@ import org.chalup.advent2019.IntcodeInterpreter.ProgramResult.GeneratedOutput
 import org.chalup.utils.times
 
 object Day2 {
-    private fun List<Int>.tweak(noun: Int, verb: Int): List<Int> = toMutableList().apply {
+    private fun List<Long>.tweak(noun: Long, verb: Long): List<Long> = toMutableList().apply {
         set(1, noun)
         set(2, verb)
     }
 
-    fun task1(input: String): Int = parseProgram(input)
+    fun task1(input: String): Long = parseProgram(input)
         .tweak(noun = 12, verb = 2)
         .let {
             when (val result = IntcodeInterpreter(it).run()) {
@@ -22,12 +22,12 @@ object Day2 {
             }
         }
 
-    fun task2(input: String, expectedOutput: Int): Int {
+    fun task2(input: String, expectedOutput: Long): Int {
         val program = parseProgram(input)
 
         return ((0..99) * (0..99))
             .firstOrNull { (noun, verb) ->
-                when (val result = IntcodeInterpreter(program.tweak(noun, verb)).run()) {
+                when (val result = IntcodeInterpreter(program.tweak(noun.toLong(), verb.toLong())).run()) {
                     is ExecutionError -> false
                     is Finished -> result.finalState[0] == expectedOutput
                     is GeneratedOutput -> false

@@ -5,9 +5,8 @@ import org.chalup.advent2019.IntcodeInterpreter.ProgramResult.Finished
 import org.chalup.advent2019.IntcodeInterpreter.ProgramResult.GeneratedOutput
 
 object Day7 {
-    fun calculateMaxThrusterInput(programInput: String): Int {
-        val program = programInput.split(",").map(String::toInt)
-
+    fun calculateMaxThrusterInput(programInput: String): Long {
+        val program = IntcodeInterpreter.parseProgram(programInput)
         val phaseConfigs = permutations((0 until 5).toSet())
 
         return phaseConfigs
@@ -15,10 +14,10 @@ object Day7 {
             .max()!!
     }
 
-    private fun calculateThrust(program: List<Int>, phaseConfig: List<Int>): Int {
-        return phaseConfig.fold(0) { signal, phase ->
+    private fun calculateThrust(program: List<Long>, phaseConfig: List<Int>): Long {
+        return phaseConfig.fold(0L) { signal, phase ->
             val interpreter = IntcodeInterpreter(program).apply {
-                sendInput(phase)
+                sendInput(phase.toLong())
                 sendInput(signal)
             }
 
@@ -30,17 +29,17 @@ object Day7 {
         }
     }
 
-    fun calculateMaxThrusterInputWithFeedbackLoop(programInput: String): Int {
-        val program = programInput.split(",").map(String::toInt)
+    fun calculateMaxThrusterInputWithFeedbackLoop(programInput: String): Long {
+        val program = IntcodeInterpreter.parseProgram(programInput)
 
         val phaseConfigs = permutations((5..9).toSet())
 
         return phaseConfigs
             .map { phaseConfig ->
-                val amps = phaseConfig.map { phase -> IntcodeInterpreter(program).apply { sendInput(phase) } }
+                val amps = phaseConfig.map { phase -> IntcodeInterpreter(program).apply { sendInput(phase.toLong()) } }
 
-                var signal: Int? = 0
-                var output = 0
+                var signal: Long? = 0
+                var output = 0L
 
                 while(signal != null) {
                     output = signal
