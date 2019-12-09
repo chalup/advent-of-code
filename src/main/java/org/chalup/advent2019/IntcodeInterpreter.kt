@@ -64,14 +64,16 @@ class IntcodeInterpreter(initialProgram: List<Long>) {
     }
 
     class Memory(initialValues: List<Long>) {
-        private val data = initialValues.toMutableList()
+        private val data: MutableMap<Long, Long> = mutableMapOf<Long, Long>().apply {
+            initialValues.forEachIndexed { index, value -> put(index.toLong(), value) }
+        }
 
         operator fun get(address: Long): Long {
-            return data[address.toInt()]
+            return data[address] ?: 0
         }
 
         operator fun set(address: Long, value: Long) {
-            data[address.toInt()] = value
+            data[address] = value
         }
 
         override fun toString(): String = data.toString()
