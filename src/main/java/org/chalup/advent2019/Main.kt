@@ -33,6 +33,8 @@ fun main(args: Array<String>) {
         advent(day = 7, part = 2) { input -> Day7.calculateMaxThrusterInputWithFeedbackLoop(input().first()) }
         advent(day = 8, part = 1) { input -> Day8.task1(input().first(), width = 25, height = 6) }
         advent(day = 8, part = 2) { input -> Day8.task2(input().first(), width = 25, height = 6) }
+        advent(day = 9, part = 1) { input -> Day9.testBoostProgram(input().first()) }
+        advent(day = 9, part = 2) { input -> Day9.runBoostProgram(input().first()) }
     }
 
     println("=== TOTAL [${elapsedTotal}ms] ===")
