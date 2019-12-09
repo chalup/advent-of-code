@@ -58,8 +58,9 @@ class IntcodeInterpreter(initialProgram: List<Int>) {
         ADD(opcode = 1, action = { outParam(3).set(inParam(1) + inParam(2)).also { ip += 4 } }),
         MUL(opcode = 2, action = { outParam(3).set(inParam(1) * inParam(2)).also { ip += 4 } }),
         IN(opcode = 3, action = {
-            if (inputs.isEmpty()) { status = InInstructionWithoutInput(ip = ip, dump = memory) }
-            else outParam(1).set(inputs.removeAt(0)).also { ip += 2 }
+            if (inputs.isEmpty()) {
+                status = InInstructionWithoutInput(ip = ip, dump = memory)
+            } else outParam(1).set(inputs.removeAt(0)).also { ip += 2 }
         }),
         OUT(opcode = 4, action = {
             status = EmittingOutput(output = inParam(1))
