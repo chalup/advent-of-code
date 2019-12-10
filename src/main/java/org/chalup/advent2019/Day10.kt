@@ -3,10 +3,8 @@ package org.chalup.advent2019
 import org.chalup.utils.Point
 import org.chalup.utils.Rect
 import org.chalup.utils.Vector
-import org.chalup.utils.contains
-import org.chalup.utils.manhattanDistance
+import org.chalup.utils.normalized
 import org.chalup.utils.plus
-import org.chalup.utils.points
 
 object Day10 {
     data class AsteroidsMap(val bounds: Rect,
@@ -26,28 +24,13 @@ object Day10 {
 
     private fun ray(from: Point, vector: Vector): Sequence<Point> = generateSequence(from) { p -> p + vector }
 
-    private fun detectedAsteroids(origin: Point, asteroids: List<Point>, mapBounds: Rect): List<Point> {
-        val asteroidsLeft = asteroids.toMutableSet().apply { remove(origin) }
-        val cellsToCheck = mapBounds.points().toMutableList().apply {
-            remove(origin)
-            sortBy { manhattanDistance(origin, it) }
-        }
-
-        val detected = mutableListOf<Point>()
-
-        while (asteroidsLeft.isNotEmpty() && cellsToCheck.isNotEmpty()) {
-            val scannedCells = ray(origin, Vector(origin, cellsToCheck.first()))
-                .takeWhile { it in mapBounds }
-                .toList()
-
-            val detectedAsteroid = scannedCells.firstOrNull { it in asteroidsLeft }
-            if (detectedAsteroid != null) detected += detectedAsteroid
-
-            asteroidsLeft.removeAll(scannedCells)
-            cellsToCheck.removeAll(scannedCells)
-        }
-
-        return detected
+    private fun countDetectedAsteroids(origin: Point, asteroids: List<Point>, mapBounds: Rect): Int {
+        return asteroids
+            .asSequence()
+            .filter { it != origin }
+            .map { Vector(origin, it).normalized() }
+            .distinct()
+            .count()
     }
 
     fun maximumNumberOfDetectedAsteroids(input: List<String>) = input
@@ -56,11 +39,10 @@ object Day10 {
             asteroids
                 .asSequence()
                 .map {
-                    detectedAsteroids(origin = it,
-                                      asteroids = asteroids,
-                                      mapBounds = bounds)
+                    countDetectedAsteroids(origin = it,
+                                           asteroids = asteroids,
+                                           mapBounds = bounds)
                 }
-                .map { it.size }
                 .max()!!
         }
 

@@ -1,5 +1,8 @@
 package org.chalup.utils
 
+import org.chalup.advent2018.gcd
+import kotlin.math.abs
+
 data class Point(val x: Int, val y: Int) {
     override fun toString() = "($x, $y)"
 }
@@ -14,7 +17,7 @@ data class Rect(val topLeft: Point, val bottomRight: Point) {
     val bottom = bottomRight.y
 }
 
-fun manhattanDistance(a: Point, b: Point) = Math.abs(a.x - b.x) + Math.abs(a.y - b.y)
+fun manhattanDistance(a: Point, b: Point) = abs(a.x - b.x) + abs(a.y - b.y)
 
 operator fun Rect.contains(point: Point) = with(point) {
     val (minX, minY) = topLeft
@@ -47,5 +50,7 @@ data class Vector(val dx: Int, val dy: Int) {
     constructor(from: Point, to: Point) : this(dx = to.x - from.x,
                                                dy = to.y - from.y)
 }
+
+fun Vector.normalized() = gcd(abs(dx), abs(dy)).let { gcd -> Vector(dx / gcd, dy / gcd) }
 
 operator fun Point.plus(velocity: Vector) = with(velocity) { Point(x + dx, y + dy) }
