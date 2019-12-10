@@ -1,33 +1,23 @@
 package org.chalup.advent2019
 
 import org.chalup.utils.Point
-import org.chalup.utils.Rect
 import org.chalup.utils.Vector
+import org.chalup.utils.bounds
 import org.chalup.utils.manhattanDistance
 import org.chalup.utils.normalized
-import org.chalup.utils.plus
 import org.chalup.utils.toAngle
 import kotlin.math.PI
 
 object Day10 {
-    data class AsteroidsMap(val bounds: Rect,
-                            val asteroids: List<Point>)
+    fun readMap(lines: List<String>) = sequence {
+        lines.forEachIndexed { y, row ->
+            row.forEachIndexed { x, cell ->
+                if (cell == '#') yield(Point(x, y))
+            }
+        }
+    }.toList()
 
-    fun readMap(lines: List<String>) = AsteroidsMap(bounds = Rect(left = 0,
-                                                                  top = 0,
-                                                                  right = lines.first().length - 1,
-                                                                  bottom = lines.count() - 1),
-                                                    asteroids = sequence {
-                                                        lines.forEachIndexed { y, row ->
-                                                            row.forEachIndexed { x, cell ->
-                                                                if (cell == '#') yield(Point(x, y))
-                                                            }
-                                                        }
-                                                    }.toList())
-
-    private fun ray(from: Point, vector: Vector): Sequence<Point> = generateSequence(from) { p -> p + vector }
-
-    private fun countDetectedAsteroids(origin: Point, asteroids: List<Point>, mapBounds: Rect): Int {
+    private fun countDetectedAsteroids(origin: Point, asteroids: List<Point>): Int {
         return asteroids
             .asSequence()
             .filter { it != origin }
@@ -58,33 +48,29 @@ object Day10 {
 
     fun maximumNumberOfDetectedAsteroids(input: List<String>) = input
         .let(this::readMap)
-        .let { (bounds, asteroids) ->
+        .let { asteroids ->
             asteroids
                 .asSequence()
-                .map {
-                    countDetectedAsteroids(origin = it,
-                                           asteroids = asteroids,
-                                           mapBounds = bounds)
-                }
+                .map { countDetectedAsteroids(origin = it, asteroids = asteroids) }
                 .max()!!
         }
 
     fun vaporizationBet(input: List<String>, nth: Int): Int {
-        val (bounds, asteroids) = readMap(input)
+        val asteroids = readMap(input)
 
         val laserLocation = asteroids
             .asSequence()
-            .maxBy { countDetectedAsteroids(origin = it,
-                                            asteroids = asteroids,
-                                            mapBounds = bounds) }!!
+            .maxBy { countDetectedAsteroids(origin = it, asteroids = asteroids) }!!
 
         val nthAsteroid = vaporizationOrder(laserLocation, asteroids)[nth - 1]
 
         return nthAsteroid.x * 100 + nthAsteroid.y
     }
 
-    private fun dumpMap(location: Point, detected: List<Point>, asteroids: List<Point>, bounds: Rect) {
+    private fun dumpMap(location: Point, detected: List<Point>, asteroids: List<Point>) {
         println("--- Station at $location detects ${detected.size} asteroids ---")
+        val bounds = asteroids.bounds()
+
         val detectedSet = detected.toSet()
         val obscuredSet = asteroids.toSet() - detectedSet
 
