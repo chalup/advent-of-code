@@ -35,6 +35,7 @@ fun main(args: Array<String>) {
         advent(day = 8, part = 2) { input -> Day8.task2(input().first(), width = 25, height = 6) }
         advent(day = 9, part = 1) { input -> Day9.testBoostProgram(input().first()) }
         advent(day = 9, part = 2) { input -> Day9.runBoostProgram(input().first()) }
+        advent(day = 10, part = 1) { input -> Day10.maximumNumberOfDetectedAsteroids(input()) }
     }
 
     println("=== TOTAL [${elapsedTotal}ms] ===")

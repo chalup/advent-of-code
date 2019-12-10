@@ -43,6 +43,9 @@ infix fun Point.isOnTheEdgeOf(bounds: Rect) = with(bounds) {
     }
 }
 
-data class Vector(val dx: Int, val dy: Int)
+data class Vector(val dx: Int, val dy: Int) {
+    constructor(from: Point, to: Point) : this(dx = to.x - from.x,
+                                               dy = to.y - from.y)
+}
 
 operator fun Point.plus(velocity: Vector) = with(velocity) { Point(x + dx, y + dy) }
