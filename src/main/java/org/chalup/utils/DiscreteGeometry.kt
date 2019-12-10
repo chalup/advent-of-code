@@ -1,7 +1,9 @@
 package org.chalup.utils
 
 import org.chalup.advent2018.gcd
+import kotlin.math.PI
 import kotlin.math.abs
+import kotlin.math.atan2
 
 data class Point(val x: Int, val y: Int) {
     override fun toString() = "($x, $y)"
@@ -52,5 +54,6 @@ data class Vector(val dx: Int, val dy: Int) {
 }
 
 fun Vector.normalized() = gcd(abs(dx), abs(dy)).let { gcd -> Vector(dx / gcd, dy / gcd) }
+fun Vector.toAngle(): Double = atan2(dy.toDouble(), dx.toDouble())
 
 operator fun Point.plus(velocity: Vector) = with(velocity) { Point(x + dx, y + dy) }
