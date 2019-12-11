@@ -37,7 +37,6 @@ object Day3 {
         }
         .let { Wire(it.toList()) }
 
-
     private fun List<Wire>.intersections() = this
         .map { it.points as Iterable<Point> }
         .reduce { a, b -> a intersect b }
