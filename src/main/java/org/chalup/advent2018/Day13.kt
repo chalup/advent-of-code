@@ -11,9 +11,6 @@ import org.chalup.utils.Point
 import java.util.LinkedList
 
 object Day13 {
-    inline fun <reified T : Enum<T>> Enum<T>.cycleNext(): T = enumValues<T>().run { get((ordinal + 1) % size) }
-    inline fun <reified T : Enum<T>> Enum<T>.cyclePrev(): T = enumValues<T>().run { get((ordinal + size - 1) % size) }
-
     enum class OnIntersection {
         TURN_LEFT, GO_STRAIGHT, TURN_RIGHT;
     }

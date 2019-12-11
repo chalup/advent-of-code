@@ -39,7 +39,9 @@ fun <T, R> Iterable<T>.scan(initial: R, operation: (R, T) -> R) = object : Itera
     }
 }
 
-
 tailrec fun gcd(a: Int, b: Int): Int =
     if (b == 0) a
     else gcd(b, a % b)
+
+inline fun <reified T : Enum<T>> Enum<T>.cycleNext(): T = enumValues<T>().run { get((ordinal + 1) % size) }
+inline fun <reified T : Enum<T>> Enum<T>.cyclePrev(): T = enumValues<T>().run { get((ordinal + size - 1) % size) }
