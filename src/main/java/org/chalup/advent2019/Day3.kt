@@ -1,31 +1,20 @@
 package org.chalup.advent2019
 
+import org.chalup.utils.Direction
 import org.chalup.utils.Point
-import org.chalup.utils.Vector
 import org.chalup.utils.manhattanDistance
 import org.chalup.utils.match
 import org.chalup.utils.plus
 
 object Day3 {
-    private data class WireSpec(val direction: WireDirection, val length: Int)
-
-    private enum class WireDirection(val symbol: String, val vector: Vector) {
-        L("L", Vector(-1, 0)),
-        R("R", Vector(+1, 0)),
-        U("U", Vector(0, +1)),
-        D("D", Vector(0, -1));
-
-        companion object {
-            fun fromSymbol(symbol: String) = values().firstOrNull { it.symbol == symbol } ?: throw IllegalArgumentException("Unrecognized direction: $symbol")
-        }
-    }
+    private data class WireSpec(val direction: Direction, val length: Int)
 
     private data class Wire(val points: List<Point>)
 
     private fun parseSegment(segment: String): WireSpec = match(segment) {
         pattern("""(.)(\d+)""") { (direction, numbers) ->
             WireSpec(
-                direction = WireDirection.fromSymbol(direction),
+                direction = Direction.fromSymbol(direction),
                 length = numbers.toInt())
         }
     }

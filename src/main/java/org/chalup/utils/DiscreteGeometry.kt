@@ -57,3 +57,14 @@ fun Vector.normalized() = gcd(abs(dx), abs(dy)).let { gcd -> Vector(dx / gcd, dy
 fun Vector.toAngle(): Double = atan2(dy.toDouble(), dx.toDouble())
 
 operator fun Point.plus(velocity: Vector) = with(velocity) { Point(x + dx, y + dy) }
+
+enum class Direction(val symbol: String, val vector: Vector) {
+    L("L", Vector(-1, 0)),
+    R("R", Vector(+1, 0)),
+    U("U", Vector(0, +1)),
+    D("D", Vector(0, -1));
+
+    companion object {
+        fun fromSymbol(symbol: String) = values().firstOrNull { it.symbol == symbol } ?: throw IllegalArgumentException("Unrecognized direction: $symbol")
+    }
+}
