@@ -10,13 +10,16 @@ import org.chalup.advent2019.IntcodeInterpreter.ProgramResult.Finished
 import org.chalup.advent2019.IntcodeInterpreter.ProgramResult.GeneratedOutput
 import org.chalup.utils.Direction
 import org.chalup.utils.Point
+import org.chalup.utils.bounds
 import org.chalup.utils.plus
 
 object Day11 {
-    fun paintedPanels(paintingProgram: String): Map<Point, Long> {
-        val panels = mutableMapOf<Point, Long>()
+    fun paintedPanels(paintingProgram: String, startingPanelColor: Long = 0): Map<Point, Long> {
         var position = Point(0, 0)
         var direction = Direction.U
+
+        val panels = mutableMapOf(position to startingPanelColor)
+
         val interpreter = IntcodeInterpreter(parseProgram(paintingProgram))
 
         while (true) {
@@ -47,4 +50,21 @@ object Day11 {
     }
 
     fun task1(program: String) = paintedPanels(program).keys.size
+
+    fun task2(program: String) = paintedPanels(program, startingPanelColor = 1)
+        .filter { (_, color) -> color == 1L }
+        .keys
+        .let { whitePanels ->
+            val bounds = whitePanels.bounds()
+
+            val result = StringBuilder("\n")
+            for (y in bounds.topLeft.y..bounds.bottomRight.y) {
+                for (x in bounds.topLeft.x..bounds.bottomRight.x) {
+                    result.append(if (whitePanels.contains(Point(x, y))) '#'
+                                  else ' ')
+                }
+                result.append("\n")
+            }
+            result.toString()
+        }
 }
