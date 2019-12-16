@@ -43,5 +43,13 @@ tailrec fun gcd(a: Int, b: Int): Int =
     if (b == 0) a
     else gcd(b, a % b)
 
+fun lcm(a: Int, b: Int) = a * b / gcd(a, b)
+
+tailrec fun gcd(a: Long, b: Long): Long =
+    if (b == 0L) a
+    else gcd(b, a % b)
+
+fun lcm(a: Long, b: Long) = a * b / gcd(a, b)
+
 inline fun <reified T : Enum<T>> Enum<T>.cycleNext(): T = enumValues<T>().run { get((ordinal + 1) % size) }
 inline fun <reified T : Enum<T>> Enum<T>.cyclePrev(): T = enumValues<T>().run { get((ordinal + size - 1) % size) }
