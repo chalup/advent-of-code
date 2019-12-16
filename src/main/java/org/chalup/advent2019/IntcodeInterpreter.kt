@@ -38,7 +38,7 @@ class IntcodeInterpreter(initialProgram: List<Long>) {
 
         repeat(n + 1) { flag /= 10 }
 
-        when(val mode = flag % 10)  {
+        when (val mode = flag % 10) {
             0L -> POSITION
             1L -> IMMEDIATE
             2L -> RELATIVE
