@@ -16,7 +16,7 @@ internal class Day10Test {
 
     @Test
     fun `should determine correct vaporization order`() {
-        val (_, asteroids) = Day10.readMap(bigMap.lines())
+        val asteroids = Day10.readMap(bigMap.lines())
         val laserLocation = Point(11, 13)
 
         val vaporizationOrder = Day10.vaporizationOrder(laserLocation = laserLocation,
