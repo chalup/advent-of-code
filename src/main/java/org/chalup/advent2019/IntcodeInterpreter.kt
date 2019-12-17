@@ -14,11 +14,13 @@ import org.chalup.advent2019.IntcodeInterpreter.ProgramResult.ExecutionError
 import org.chalup.advent2019.IntcodeInterpreter.ProgramResult.Finished
 import org.chalup.advent2019.IntcodeInterpreter.ProgramResult.GeneratedOutput
 
-class IntcodeInterpreter(initialProgram: List<Long>) {
+class IntcodeInterpreter(memoryDump: Memory) {
+    constructor(initialProgram: List<Long>) : this(Memory(initialProgram))
+
     private var ip: Long = 0
     private var relativeOffset: Long = 0
     private val inputs: MutableList<Long> = mutableListOf()
-    private val memory: Memory = Memory(initialProgram)
+    private val memory: Memory = Memory(memoryDump)
     private var status: InterpreterStatus = Running
 
     fun sendInput(input: Long) = inputs.add(input)
@@ -63,10 +65,11 @@ class IntcodeInterpreter(initialProgram: List<Long>) {
         }
     }
 
-    class Memory(initialValues: List<Long>) {
-        private val data: MutableMap<Long, Long> = mutableMapOf<Long, Long>().apply {
+    class Memory(private val data: MutableMap<Long, Long>) {
+        constructor(memory: Memory) : this(memory.data.toMutableMap())
+        constructor(initialValues: List<Long>) : this(mutableMapOf<Long, Long>().apply {
             initialValues.forEachIndexed { index, value -> put(index.toLong(), value) }
-        }
+        })
 
         operator fun get(address: Long): Long {
             return data[address] ?: 0
@@ -137,6 +140,8 @@ class IntcodeInterpreter(initialProgram: List<Long>) {
             }
         }
     }
+
+    fun dump() = memory
 
     sealed class ProgramResult {
         data class ExecutionError(val error: InterpreterError) : ProgramResult() {

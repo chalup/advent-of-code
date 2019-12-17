@@ -43,6 +43,7 @@ fun main(args: Array<String>) {
         advent(day = 12, part = 2) { input -> Day12.task2(input()) }
         advent(day = 13, part = 1) { input -> Day13.task1(input().first()) }
         advent(day = 14, part = 1) { input -> Day14.oreCostOfOneFuel(input()) }
+        advent(day = 15, part = 1) { input -> Day15.task1(input().first()) }
     }
 
     println("=== TOTAL [${elapsedTotal}ms] ===")
