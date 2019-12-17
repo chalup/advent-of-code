@@ -64,8 +64,8 @@ object Day15 {
 }
 
 private fun Direction.asRepairDroidInput(): Long = when (this) {
-    U -> 2
+    U -> 1
     R -> 4
-    D -> 1
+    D -> 2
     L -> 3
 }
