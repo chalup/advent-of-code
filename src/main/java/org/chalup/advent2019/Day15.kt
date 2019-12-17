@@ -57,6 +57,37 @@ object Day15 {
         return oxygenSystemPath.size
     }
 
+    fun task2(droidProgram: String): Int {
+        val map = exploreMap(droidProgram).systemMap
+
+        val (oxygenGenerator, emptyTiles) = map.asIterable().groupBy(keySelector = { (_, tile) -> tile },
+                                                                     valueTransform = { (point, _) -> point }).let {
+            val oxygenGenerator = it.getValue(OXYGEN).single()
+            val emptyTiles = it.getValue(EMPTY)
+
+            oxygenGenerator to emptyTiles
+        }
+
+        val frontier = mutableListOf(oxygenGenerator)
+        val tilesLeft = emptyTiles.toMutableSet()
+        val distanceToGenerator = mutableMapOf(oxygenGenerator to 0)
+
+        while (frontier.isNotEmpty() && tilesLeft.isNotEmpty()) {
+            val position = frontier.removeAt(0)
+
+            for (direction in Direction.values()) {
+                val newPosition = position + direction.vector
+
+                if (!tilesLeft.remove(newPosition)) continue
+
+                distanceToGenerator[newPosition] = distanceToGenerator.getValue(position) + 1
+                frontier += newPosition
+            }
+        }
+
+        return distanceToGenerator.values.max()!!
+    }
+
     data class MapInfo(val systemMap: Map<Point, Tile>,
                        val pathToOrigin: Map<Point, List<Point>>)
 
