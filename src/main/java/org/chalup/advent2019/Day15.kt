@@ -17,12 +17,12 @@ object Day15 {
     fun exploreMap(droidProgram: String): MapInfo {
         val droidDumps = mutableMapOf(Point(0, 0) to Memory(IntcodeInterpreter.parseProgram(droidProgram)))
 
-        val frontier = mutableSetOf(Point(0, 0))
+        val frontier = mutableListOf(Point(0, 0))
         val systemMap = mutableMapOf(Point(0, 0) to EMPTY)
         val pathToOrigin = mutableMapOf(Point(0, 0) to emptyList<Point>())
 
         while (frontier.isNotEmpty()) {
-            val position = frontier.first().also { frontier.remove(it) }
+            val position = frontier.removeAt(0)
             val pathToPosition = pathToOrigin.getValue(position)
 
             for (direction in Direction.values()) {
