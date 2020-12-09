@@ -19,7 +19,7 @@ object Day2 {
 
     private fun ribbonAmountToWrapThePackage(l: Int, w: Int, h: Int) = listOf(l + w, w + h, l + h)
         .map { it * 2 }
-        .min()!!
+        .minOrNull()!!
 
     private fun ribbonAmountForTheBow(l: Int, w: Int, h: Int) = l * w * h
 }

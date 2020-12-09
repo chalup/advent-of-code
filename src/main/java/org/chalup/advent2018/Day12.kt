@@ -13,8 +13,8 @@ object Day12 {
 
         return generateSequence(initialState) { state ->
             mutableSetOf<Int>().apply {
-                val min = (state.min() ?: 0) - neighborhoodRange
-                val max = (state.max() ?: 0) + neighborhoodRange
+                val min = (state.minOrNull() ?: 0) - neighborhoodRange
+                val max = (state.maxOrNull() ?: 0) + neighborhoodRange
 
                 val stateAsList = (min - neighborhoodRange..max + neighborhoodRange).map { it in state }
 
@@ -30,7 +30,7 @@ object Day12 {
     }
 
     fun calculateChecksum(generationNumber: Long, generations: Sequence<Set<Int>>): Long {
-        fun Set<Int>.relative() = min()!!.let { min -> map { it - min } }.toSet()
+        fun Set<Int>.relative() = minOrNull()!!.let { min -> map { it - min } }.toSet()
 
         generations
             .zipWithNext()

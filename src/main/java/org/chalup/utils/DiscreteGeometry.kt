@@ -32,8 +32,8 @@ fun Rect.points() = ((topLeft.x..bottomRight.x) * (topLeft.y..bottomRight.y)).ma
 
 
 fun Iterable<Point>.bounds(): Rect {
-    val (minX, maxX) = map { it.x }.let { it.min()!! to it.max()!! }
-    val (minY, maxY) = map { it.y }.let { it.min()!! to it.max()!! }
+    val (minX, maxX) = map { it.x }.let { it.minOrNull()!! to it.maxOrNull()!! }
+    val (minY, maxY) = map { it.y }.let { it.minOrNull()!! to it.maxOrNull()!! }
 
     return Rect(minX, minY, maxX, maxY)
 }

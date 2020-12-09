@@ -15,7 +15,8 @@ object Day3 {
         pattern("""(.)(\d+)""") { (direction, numbers) ->
             WireSpec(
                 direction = Direction.fromSymbol(direction),
-                length = numbers.toInt())
+                length = numbers.toInt()
+            )
         }
     }
 
@@ -24,7 +25,7 @@ object Day3 {
         .asSequence()
         .map(this::parseSegment)
         .let { specs ->
-            sequence<Point> {
+            sequence {
                 var p = origin
 
                 suspend fun SequenceScope<Point>.yieldPoint(point: Point) {
@@ -38,14 +39,14 @@ object Day3 {
         .let { Wire(it.toList()) }
 
     private fun List<Wire>.intersections() = this
-        .map { it.points as Iterable<Point> }
-        .reduce { a, b -> a intersect b }
+        .map { it.points }
+        .reduce<Iterable<Point>, List<Point>> { a, b -> a intersect b }
 
     fun distanceToNearestIntersection(input: List<String>): Int = input
         .map(this::parseWire)
         .intersections()
         .map { manhattanDistance(it, origin) }
-        .min()!!
+        .minOrNull()!!
 
     fun shortestPath(input: List<String>): Int = input
         .map(this::parseWire)
@@ -53,7 +54,7 @@ object Day3 {
             wires
                 .intersections()
                 .map { intersection -> wires.sumBy { wire -> wire.points.indexOf(intersection) + 1 } }
-                .min()!!
+                .minOrNull()!!
         }
 
     private val origin = Point(0, 0)

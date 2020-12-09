@@ -14,14 +14,14 @@ object Day5 {
         .joinToString(separator = "")
 
     fun minimalImprovedPolymerLength(polymer: String): Int =
-            polymer
-                .toUpperCase()
-                .toSet()
-                .map { element ->
-                    polymer
-                        .filterNot { it.equals(element, ignoreCase = true) }
-                        .let { reduce(it) }
-                        .length
-                }
-                .min()!!
+        polymer
+            .toUpperCase()
+            .toSet()
+            .map { element ->
+                polymer
+                    .filterNot { it.equals(element, ignoreCase = true) }
+                    .let { reduce(it) }
+                    .length
+            }
+            .minOrNull()!!
 }

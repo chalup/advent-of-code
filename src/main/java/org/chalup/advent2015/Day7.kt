@@ -11,7 +11,7 @@ import org.chalup.advent2015.Day7.CircuitElement.Input.Wire
 import org.chalup.advent2015.Day7.CircuitElement.Not
 import org.chalup.utils.match
 
-@UseExperimental(ExperimentalUnsignedTypes::class)
+@OptIn(ExperimentalUnsignedTypes::class)
 object Day7 {
     sealed class CircuitElement {
         sealed class Input : CircuitElement() {

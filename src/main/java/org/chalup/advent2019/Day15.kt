@@ -61,7 +61,7 @@ object Day15 {
         val map = exploreMap(droidProgram).systemMap
 
         val (oxygenGenerator, emptyTiles) = map.asIterable().groupBy(keySelector = { (_, tile) -> tile },
-                                                                     valueTransform = { (point, _) -> point }).let {
+            valueTransform = { (point, _) -> point }).let {
             val oxygenGenerator = it.getValue(OXYGEN).single()
             val emptyTiles = it.getValue(EMPTY)
 
@@ -85,7 +85,7 @@ object Day15 {
             }
         }
 
-        return distanceToGenerator.values.max()!!
+        return distanceToGenerator.values.maxOrNull()!!
     }
 
     data class MapInfo(val systemMap: Map<Point, Tile>,

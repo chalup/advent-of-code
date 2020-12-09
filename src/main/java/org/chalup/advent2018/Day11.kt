@@ -42,7 +42,7 @@ object Day11 {
                     }
 
                 currentAreaSizeData
-                    .maxBy { (_, power) -> power }
+                    .maxByOrNull { (_, power) -> power }
                     ?.also { (point, power) ->
                         bestResultPerArea.add(Coordinates(point, areaSize) to power)
                     }

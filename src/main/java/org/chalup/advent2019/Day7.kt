@@ -11,7 +11,7 @@ object Day7 {
 
         return phaseConfigs
             .map { config -> calculateThrust(program, config) }
-            .max()!!
+            .maxOrNull()!!
     }
 
     private fun calculateThrust(program: List<Long>, phaseConfig: List<Int>): Long {
@@ -57,7 +57,7 @@ object Day7 {
 
                 output
             }
-            .max()!!
+            .maxOrNull()!!
     }
 
     private fun <T : Any> permutations(set: Set<T>) = sequence {

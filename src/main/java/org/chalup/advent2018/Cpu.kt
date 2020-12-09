@@ -73,7 +73,7 @@ data class Cpu(val registers: MutableList<Int> = MutableList(4) { 0 },
             val specialHandler = specialHandlers[instructionPointer]
 
             if (specialHandler != null) {
-                specialHandler()
+                specialHandler.invoke(this@Cpu)
             } else {
                 val (opcode, params) = instructions[instructionPointer]
                 execute(opcode, params)

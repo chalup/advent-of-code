@@ -30,6 +30,6 @@ object Day9 {
             }
         }
 
-        return scores.max()!!
+        return scores.maxOrNull()!!
     }
 }

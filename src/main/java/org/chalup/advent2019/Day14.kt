@@ -22,11 +22,11 @@ object Day14 {
 
         val chemicalsComplexity = mutableMapOf("ORE" to 0)
         fun getComplexity(symbol: String): Int = chemicalsComplexity.getOrPut(symbol) {
-            reactionFor(symbol).inputs.asSequence().map { getComplexity(it.symbol) }.max()!! + 1
+            reactionFor(symbol).inputs.asSequence().map { getComplexity(it.symbol) }.maxOrNull()!! + 1
         }
 
         val requirementsSequence = generateSequence(listOf(Chemicals("FUEL", 1))) { inputs ->
-            val nextChemicals = inputs.asIterable().maxBy { (symbol, _) -> getComplexity(symbol) }!!
+            val nextChemicals = inputs.asIterable().maxByOrNull { (symbol, _) -> getComplexity(symbol) }!!
 
             if (nextChemicals.symbol == "ORE") return@generateSequence null
 

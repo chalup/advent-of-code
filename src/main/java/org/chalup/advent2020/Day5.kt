@@ -3,12 +3,12 @@ package org.chalup.advent2020
 object Day5 {
     fun task1(input: List<String>): Int = input
         .map { seatNumber(it) }
-        .max()!!
+        .maxOrNull()!!
 
     fun task2(input: List<String>): Int = input
         .mapTo(mutableSetOf()) { seatNumber(it) }
         .let<Set<Int>, Int> { seatNumbers ->
-            val seatNumbersRange = seatNumbers.min()!!..seatNumbers.max()!!
+            val seatNumbersRange = seatNumbers.minOrNull()!!..seatNumbers.maxOrNull()!!
 
             seatNumbersRange.first { it !in seatNumbers }
         }

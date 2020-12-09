@@ -75,7 +75,7 @@ object Day4 {
     private fun <T, R> List<T>.maxCountBy(selector: (T) -> R) = this
         .groupingBy(selector)
         .eachCount()
-        .maxBy { it.value }!!
+        .maxByOrNull { it.value }!!
         .key
 
     fun strategy1(input: List<String>) = getSleepLog(input)

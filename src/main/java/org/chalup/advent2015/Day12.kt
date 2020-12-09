@@ -5,8 +5,6 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 
 object Day12 {
-    private val jsonParser = JsonParser()
-
     val isNotRed: (JsonObject) -> Boolean = { jsonObject ->
         jsonObject.entrySet().none { (_, value) -> value.isJsonPrimitive && value.asJsonPrimitive.asString == "red" }
     }
@@ -28,5 +26,5 @@ object Day12 {
         }
 
     fun sumNumbersInJson(json: String, objectFilter: (JsonObject) -> Boolean = { true }): Int =
-        jsonParser.parse(json).extractNumbers(objectFilter).sum()
+        JsonParser.parseString(json).extractNumbers(objectFilter).sum()
 }

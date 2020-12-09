@@ -5,7 +5,6 @@ import org.chalup.utils.bounds
 import org.chalup.utils.isOnTheEdgeOf
 import org.chalup.utils.manhattanDistance
 import org.chalup.utils.points
-import java.lang.Math.abs
 
 object Day6 {
     private class Area(val origin: Point)
@@ -23,13 +22,13 @@ object Day6 {
                 .groupBy { point ->
                     areas
                         .groupBy { area -> manhattanDistance(area.origin, point) }
-                        .minBy { (distance, _) -> distance }!!
+                        .minByOrNull { (distance, _) -> distance }!!
                         .let { (_, areas) -> areas.singleOrNull() }
                 }
                 .filterKeys { it != null }
                 .filter { (_, points) -> points.none { it isOnTheEdgeOf bounds } }
                 .map { (_, points) -> points.size }
-                .max()!!
+                .maxOrNull()!!
         }
 
     fun findSafeRegionArea(input: List<String>, maxDistanceSum: Int): Int = input

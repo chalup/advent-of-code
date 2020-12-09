@@ -8,7 +8,7 @@ import java.util.LinkedList
 object Day20 {
     fun part1(input: String): Int = traverse(input)
         .values
-        .max()!!
+        .maxOrNull()!!
 
     fun part2(input: String): Int = traverse(input)
         .values

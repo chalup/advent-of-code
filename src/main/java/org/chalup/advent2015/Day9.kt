@@ -14,7 +14,8 @@ object Day9 {
                 (start to destination) to distance.toInt()
             }
 
-    fun findShortestAndLongestRoute(routes: List<String>) = routes
+    @Suppress("UnstableApiUsage")
+    fun findShortestAndLongestRoute(input: List<String>) = input
         .map { parseRoute(it) }
         .toMap()
         .let { routes ->
@@ -30,6 +31,6 @@ object Day9 {
                         .zipWithNext()
                         .sumBy { (a, b) -> routes[a to b] ?: routes[b to a] ?: throw IllegalStateException("Can't find route between $a and $b") }
                 }
-                .let { it.min()!! to it.max()!! }
+                .let { it.minOrNull()!! to it.maxOrNull()!! }
         }
 }

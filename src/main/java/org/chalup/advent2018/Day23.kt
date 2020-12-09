@@ -1,7 +1,7 @@
 package org.chalup.advent2018
 
 import org.chalup.utils.parseNumbers
-import java.lang.Math.abs
+import kotlin.math.abs
 
 object Day23 {
     data class Nanobot(val x: Int,
@@ -13,7 +13,7 @@ object Day23 {
         .map { parseNumbers(it).let { (x, y, z, signalStrength) -> Nanobot(x, y, z, signalStrength) } }
 
     fun part1(input: List<String>) = parse(input).let { bots ->
-        val strongestBot = bots.maxBy { it.signalStrength }!!
+        val strongestBot = bots.maxByOrNull { it.signalStrength }!!
 
         infix fun Nanobot.isInRangeOf(bot: Nanobot): Boolean {
             val distance = abs(x - bot.x) + abs(y - bot.y) + abs(z - bot.z)

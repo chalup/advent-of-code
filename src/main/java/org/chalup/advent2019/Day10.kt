@@ -52,15 +52,14 @@ object Day10 {
             asteroids
                 .asSequence()
                 .map { countDetectedAsteroids(origin = it, asteroids = asteroids) }
-                .max()!!
+                .maxOrNull()!!
         }
 
     fun vaporizationBet(input: List<String>, nth: Int): Int {
         val asteroids = readMap(input)
 
         val laserLocation = asteroids
-            .asSequence()
-            .maxBy { countDetectedAsteroids(origin = it, asteroids = asteroids) }!!
+            .maxByOrNull { countDetectedAsteroids(origin = it, asteroids = asteroids) }!!
 
         val nthAsteroid = vaporizationOrder(laserLocation, asteroids)[nth - 1]
 
