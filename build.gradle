@@ -1,5 +1,5 @@
 plugins {
-    id 'org.jetbrains.kotlin.jvm' version '1.4.21'
+    id 'org.jetbrains.kotlin.jvm' version '1.5.30'
     id "com.github.ben-manes.versions" version "0.36.0"
 }
 
@@ -26,9 +26,11 @@ test {
 
 compileKotlin {
     kotlinOptions.jvmTarget = "1.8"
-    kotlinOptions.freeCompilerArgs = ['-Xopt-in=kotlin.RequiresOptIn']
+    kotlinOptions.freeCompilerArgs = ['-Xopt-in=kotlin.RequiresOptIn',
+                                      '-Xopt-in=kotlin.ExperimentalStdlibApi']
 }
 compileTestKotlin {
     kotlinOptions.jvmTarget = "1.8"
-    kotlinOptions.freeCompilerArgs = ['-Xopt-in=kotlin.RequiresOptIn']
+    kotlinOptions.freeCompilerArgs = ['-Xopt-in=kotlin.RequiresOptIn',
+                                      '-Xopt-in=kotlin.ExperimentalStdlibApi']
 }

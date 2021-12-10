@@ -1,13 +1,13 @@
-package org.chalup.advent2020
+package org.chalup.advent2021
 
 import java.io.File
 import kotlin.system.measureTimeMillis
 
 fun main(args: Array<String>) {
-    fun advent(day: Int, part: Int, block: (() -> List<String>) -> Any) {
+    fun advent(day: Int, part: Int, test: Boolean = false, block: (() -> List<String>) -> Any) {
         lateinit var result: Any
 
-        val input = { File(args[0], "day${day}.txt").readLines() }
+        val input = { File(args[0], "day${day}${if (test) "-test" else ""}.txt").readLines() }
 
         val elapsed = measureTimeMillis {
             result = block(input)
@@ -27,20 +27,14 @@ fun main(args: Array<String>) {
         advent(day = 4, part = 2) { input -> Day4.task2(input()) }
         advent(day = 5, part = 1) { input -> Day5.task1(input()) }
         advent(day = 5, part = 2) { input -> Day5.task2(input()) }
-        advent(day = 6, part = 1) { input -> Day6.task1(input()) }
-        advent(day = 6, part = 2) { input -> Day6.task2(input()) }
-        advent(day = 7, part = 1) { input -> Day7.task1(input()) }
-        advent(day = 7, part = 2) { input -> Day7.task2(input()) }
+        advent(day = 6, part = 1) { input -> Day6.task1(input().single()) }
+        advent(day = 6, part = 2) { input -> Day6.task2(input().single()) }
+        advent(day = 7, part = 1) { input -> Day7.task1(input().single()) }
+        advent(day = 7, part = 2) { input -> Day7.task2(input().single()) }
         advent(day = 8, part = 1) { input -> Day8.task1(input()) }
         advent(day = 8, part = 2) { input -> Day8.task2(input()) }
         advent(day = 9, part = 1) { input -> Day9.task1(input()) }
         advent(day = 9, part = 2) { input -> Day9.task2(input()) }
-        advent(day = 10, part = 1) { input -> Day10.task1(input()) }
-        advent(day = 11, part = 1) { input -> Day11.task1(input()) }
-        advent(day = 11, part = 2) { input -> Day11.task2(input()) }
-        advent(day = 12, part = 1) { input -> Day12.task1(input()) }
-        advent(day = 12, part = 2) { input -> Day12.task2(input()) }
-        advent(day = 13, part = 1) { input -> Day13.task1(input()) }
     }
 
     println("=== TOTAL [${elapsedTotal}ms] ===")
