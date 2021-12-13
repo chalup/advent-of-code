@@ -7,7 +7,7 @@ object Day2 {
         .asSequence()
         .map { parsePlannedCourse(it) }
         .fold(Position()) { position, (direction, amount) ->
-            when(direction) {
+            when (direction) {
                 Direction.FORWARD -> position.copy(horizontalDistance = position.horizontalDistance + amount)
                 Direction.DOWN -> position.copy(depth = position.depth + amount)
                 Direction.UP -> position.copy(depth = position.depth - amount)
@@ -19,7 +19,7 @@ object Day2 {
         .asSequence()
         .map { parsePlannedCourse(it) }
         .fold(PositionWithAim()) { position, (direction, amount) ->
-            when(direction) {
+            when (direction) {
                 Direction.FORWARD -> position.copy(
                     horizontalDistance = position.horizontalDistance + amount,
                     depth = position.depth + amount * position.aim,
@@ -32,7 +32,12 @@ object Day2 {
 
     private fun parsePlannedCourse(input: String) = match<PlannedCourse>(input) {
         Direction.values().forEach { direction ->
-            pattern("""${direction.name.toLowerCase()} (\d+)""") { (amount) -> PlannedCourse(direction, amount.toInt()) }
+            pattern("""${direction.name.lowercase()} (\d+)""") { (amount) ->
+                PlannedCourse(
+                    direction,
+                    amount.toInt()
+                )
+            }
         }
     }
 
