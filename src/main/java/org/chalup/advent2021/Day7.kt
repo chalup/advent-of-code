@@ -1,5 +1,6 @@
 package org.chalup.advent2021
 
+import org.chalup.utils.minMax
 import kotlin.math.abs
 
 object Day7 {
@@ -15,7 +16,8 @@ object Day7 {
         val positions = positions(input)
 
         return positions
-            .minMaxRange()
+            .minMax()
+            .let { (min, max) -> min..max }
             .minOf { optimalPosition ->
                 positions.sumOf { position ->
                     val distance = abs(position - optimalPosition)
@@ -30,16 +32,3 @@ object Day7 {
         .map(String::toInt)
         .toList()
 }
-
-private fun Iterable<Int>.minMaxRange(): IntRange {
-    var min = Int.MAX_VALUE
-    var max = Int.MIN_VALUE
-
-    forEach { i ->
-        min = minOf(min, i)
-        max = maxOf(max, i)
-    }
-
-    return min..max
-}
-

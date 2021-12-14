@@ -1,5 +1,7 @@
 package org.chalup.advent2021
 
+import org.chalup.utils.minMax
+
 object Day14 {
     fun task1(input: List<String>): Int = input
         .let(this::parse)
@@ -24,19 +26,7 @@ object Day14 {
                 .groupingBy { it }
                 .eachCount()
 
-            val (min, max) = occurrences
-                .values
-                .let {
-                    var min = Int.MAX_VALUE
-                    var max = Int.MIN_VALUE
-
-                    for (i in it) {
-                        min = minOf(i, min)
-                        max = maxOf(i, max)
-                    }
-
-                    min to max
-                }
+            val (min, max) = occurrences.values.minMax()
 
             max - min
         }
