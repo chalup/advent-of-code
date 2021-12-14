@@ -4,10 +4,10 @@ import java.io.File
 import kotlin.system.measureTimeMillis
 
 fun main(args: Array<String>) {
-    fun advent(day: Int, part: Int, test: Boolean = false, block: (() -> List<String>) -> Any) {
+    fun advent(day: Int, part: Int, testSet: String? = null, block: (() -> List<String>) -> Any) {
         lateinit var result: Any
 
-        val input = { File(args[0], "day${day}${if (test) "-test" else ""}.txt").readLines() }
+        val input = { File(args[0], "day${day}${testSet?.let { "-$it"} ?: ""}.txt").readLines() }
 
         val elapsed = measureTimeMillis {
             result = block(input)
@@ -39,6 +39,8 @@ fun main(args: Array<String>) {
         advent(day = 10, part = 2) { input -> Day10.task2(input()) }
         advent(day = 11, part = 1) { input -> Day11.task1(input()) }
         advent(day = 11, part = 2) { input -> Day11.task2(input()) }
+        advent(day = 12, part = 1) { input -> Day12.task1(input()) }
+        advent(day = 12, part = 2) { input -> Day12.task2(input()) }
         advent(day = 13, part = 1) { input -> Day13.task1(input()) }
         advent(day = 13, part = 2) { input -> Day13.task2(input()) }
         advent(day = 14, part = 1) { input -> Day14.task1(input()) }
