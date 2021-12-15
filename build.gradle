@@ -27,10 +27,12 @@ test {
 compileKotlin {
     kotlinOptions.jvmTarget = "1.8"
     kotlinOptions.freeCompilerArgs = ['-Xopt-in=kotlin.RequiresOptIn',
-                                      '-Xopt-in=kotlin.ExperimentalStdlibApi']
+                                      '-Xopt-in=kotlin.ExperimentalStdlibApi',
+                                      '-Xopt-in=kotlin.time.ExperimentalTime']
 }
 compileTestKotlin {
     kotlinOptions.jvmTarget = "1.8"
     kotlinOptions.freeCompilerArgs = ['-Xopt-in=kotlin.RequiresOptIn',
-                                      '-Xopt-in=kotlin.ExperimentalStdlibApi']
+                                      '-Xopt-in=kotlin.ExperimentalStdlibApi',
+                                      '-Xopt-in=kotlin.time.ExperimentalTime']
 }
