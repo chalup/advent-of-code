@@ -41,7 +41,6 @@ object Day15 {
 
         val traversedTiles = mutableSetOf<Point>()
         val queue = PriorityQueue(compareBy<Head> { it.cumulativeRisk })
-        var bestHead: Head? = null
 
         queue.add(Head(start, cumulativeRisk = 0))
 
@@ -53,17 +52,8 @@ object Day15 {
             // risky path.
             if (!traversedTiles.add(head.point)) continue
 
-            // No point in going that route, we already have a better one.
-            if (bestHead != null && head.cumulativeRisk >= bestHead.cumulativeRisk) continue
-
             // Reached the destination; remember the result and check the other routes.
-            if (head.point == destination) {
-                bestHead = bestHead
-                    ?.takeIf { it.cumulativeRisk < head.cumulativeRisk }
-                    ?: head
-
-                continue
-            }
+            if (head.point == destination) return head
 
             head.point
                 .surroundingTiles()
@@ -73,7 +63,7 @@ object Day15 {
                 .let(queue::addAll)
         }
 
-        return bestHead!!
+        throw IllegalStateException("Impossible!")
     }
 
     private fun Point.surroundingTiles() = sequence {
