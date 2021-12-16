@@ -7,7 +7,7 @@ fun main(args: Array<String>) {
     fun advent(day: Int, part: Int, testSet: String? = null, block: (() -> List<String>) -> Any) {
         lateinit var result: Any
 
-        val input = { File(args[0], "day${day}${testSet?.let { "-$it"} ?: ""}.txt").readLines() }
+        val input = { File(args[0], "day${day}${testSet?.let { "-$it" } ?: ""}.txt").readLines() }
 
         val elapsed = measureTimeMillis {
             result = block(input)
@@ -47,6 +47,8 @@ fun main(args: Array<String>) {
         advent(day = 14, part = 2) { input -> Day14.task2(input()) }
         advent(day = 15, part = 1) { input -> Day15.task1(input()) }
         advent(day = 15, part = 2) { input -> Day15.task2(input()) }
+        advent(day = 16, part = 1) { input -> Day16.task1(input()) }
+        advent(day = 16, part = 2) { input -> Day16.task2(input()) }
     }
 
     println("=== TOTAL [${elapsedTotal}ms] ===")
