@@ -88,23 +88,17 @@ object Day16 {
             is Operator -> {
                 val subPacketsValues = packet.subPackets.asSequence().map(this::eval)
 
+                fun binaryEval(block: (one: Long, other: Long) -> Long) =
+                    subPacketsValues.toList().let { (one, other) -> block(one, other) }
+
                 when(packet.type) {
                     0L -> subPacketsValues.sum()
                     1L -> subPacketsValues.fold(1L, Long::times)
                     2L -> subPacketsValues.minOrNull()!!
                     3L -> subPacketsValues.maxOrNull()!!
-                    5L -> {
-                        val (one, other) = subPacketsValues.toList()
-                        if (one > other) 1L else 0L
-                    }
-                    6L -> {
-                        val (one, other) = subPacketsValues.toList()
-                        if (one < other) 1L else 0L
-                    }
-                    7L -> {
-                        val (one, other) = subPacketsValues.toList()
-                        if (one == other) 1L else 0L
-                    }
+                    5L -> binaryEval { one, other -> if (one > other) 1L else 0L }
+                    6L -> binaryEval { one, other -> if (one < other) 1L else 0L }
+                    7L -> binaryEval { one, other -> if (one == other) 1L else 0L }
                     else -> throw IllegalArgumentException("Unexpected packet type ${packet.type}")
                 }
             }
