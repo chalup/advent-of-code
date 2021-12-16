@@ -49,23 +49,19 @@ object Day16 {
 
             return LiteralValue(version, type, value = binaryString.toLong(radix = 2))
         } else {
-            val packets = when (val lengthTypeId = iterator.readLong(1)) {
-                0L -> {
-                    val subPacketsLength = iterator.readLong(15)
-                    val countingIterator = CountingIterator(iterator)
-                    buildList {
+            val packets = buildList {
+                when (val lengthTypeId = iterator.readLong(1)) {
+                    0L -> {
+                        val subPacketsLength = iterator.readLong(15)
+                        val countingIterator = CountingIterator(iterator)
+
                         do {
                             add(parsePacket(countingIterator))
                         } while (countingIterator.count < subPacketsLength)
                     }
+                    1L -> repeat(iterator.readLong(11).toInt()) { add(parsePacket(iterator)) }
+                    else -> throw IllegalStateException("Unexpected length type id received: $lengthTypeId")
                 }
-                1L -> {
-                    val subPacketsCount = iterator.readLong(11)
-                    buildList {
-                        repeat(subPacketsCount.toInt()) { add(parsePacket(iterator)) }
-                    }
-                }
-                else -> throw IllegalStateException("Unexpected length type id received: $lengthTypeId")
             }
 
             return Operator(version, type, packets)
@@ -115,18 +111,15 @@ object Day16 {
         }
 
     sealed class Packet {
-        abstract val version: Long
-        abstract val type: Long
-
         data class LiteralValue(
-            override val version: Long,
-            override val type: Long,
+            val version: Long,
+            val type: Long,
             val value: Long,
         ) : Packet()
 
         data class Operator(
-            override val version: Long,
-            override val type: Long,
+            val version: Long,
+            val type: Long,
             val subPackets: List<Packet>,
         ) : Packet()
     }
