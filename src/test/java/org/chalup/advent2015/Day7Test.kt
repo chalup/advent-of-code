@@ -5,7 +5,6 @@ import org.chalup.advent2015.Day7.CircuitElement.Input.Signal
 import org.chalup.advent2015.Day7.CircuitElement.Input.Wire
 import org.junit.jupiter.api.Test
 
-@OptIn(ExperimentalUnsignedTypes::class)
 class Day7Test {
     @Test
     fun `should simulate test circuit`() {

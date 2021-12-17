@@ -8,6 +8,7 @@ import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 
 class Day3Test {
+    @Suppress("UNUSED_PARAMETER")
     @ParameterizedTest
     @MethodSource("intersectingWires")
     fun `should find the nearest intersection`(wires: List<String>,
@@ -16,6 +17,7 @@ class Day3Test {
         assertThat(distanceToNearestIntersection(wires)).isEqualTo(distanceToNearestIntersection)
     }
 
+    @Suppress("UNUSED_PARAMETER")
     @ParameterizedTest
     @MethodSource("intersectingWires")
     fun `should find the shortest path`(wires: List<String>,
