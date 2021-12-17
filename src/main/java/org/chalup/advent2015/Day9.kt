@@ -29,7 +29,7 @@ object Day9 {
                 .map {
                     it
                         .zipWithNext()
-                        .sumBy { (a, b) -> routes[a to b] ?: routes[b to a] ?: throw IllegalStateException("Can't find route between $a and $b") }
+                        .sumOf { (a, b) -> routes[a to b] ?: routes[b to a] ?: throw IllegalStateException("Can't find route between $a and $b") }
                 }
                 .let { it.minOrNull()!! to it.maxOrNull()!! }
         }

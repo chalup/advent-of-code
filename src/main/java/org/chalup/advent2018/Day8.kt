@@ -7,7 +7,7 @@ object Day8 {
 
         fun value(): Int = when {
             nodes.isEmpty() -> metadata.sum()
-            else -> metadata.sumBy { nodes.getOrNull(it - 1)?.value() ?: 0 }
+            else -> metadata.sumOf { nodes.getOrNull(it - 1)?.value() ?: 0 }
         }
     }
 

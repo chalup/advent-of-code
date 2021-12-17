@@ -28,7 +28,7 @@ object Day7 {
             fun numberOfBagsWithin(color: String): Int = contentsLookup
                 .getValue(color)
                 .entries
-                .sumBy { (color, amount) -> numberOfBagsWithin(color) * amount + amount }
+                .sumOf { (color, amount) -> numberOfBagsWithin(color) * amount + amount }
 
             numberOfBagsWithin("shiny gold")
         }

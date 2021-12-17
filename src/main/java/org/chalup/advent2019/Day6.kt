@@ -59,7 +59,7 @@ object Day6 {
     fun task1(input: List<String>) = input
         .let(this::parseInput)
         .let(this::buildMap)
-        .let { objects -> objects.values.sumBy { it.countOrbits() } }
+        .let { objects -> objects.values.sumOf { it.countOrbits() } }
 
     fun task2(input: List<String>) = input
         .let(this::parseInput)

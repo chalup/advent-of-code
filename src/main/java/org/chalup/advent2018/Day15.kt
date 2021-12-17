@@ -229,7 +229,7 @@ object Day15 {
         var fullRounds = turnsPassed
         if (!wasFullRound) fullRounds--
 
-        val hitPointsLeft = entities.sumBy { it.hp }
+        val hitPointsLeft = entities.sumOf { it.hp }
 
         return fullRounds * hitPointsLeft
     }

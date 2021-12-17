@@ -15,13 +15,12 @@ object Day5 {
 
     fun minimalImprovedPolymerLength(polymer: String): Int =
         polymer
-            .toUpperCase()
+            .uppercase()
             .toSet()
-            .map { element ->
+            .minOf { element ->
                 polymer
                     .filterNot { it.equals(element, ignoreCase = true) }
                     .let { reduce(it) }
                     .length
             }
-            .minOrNull()!!
 }

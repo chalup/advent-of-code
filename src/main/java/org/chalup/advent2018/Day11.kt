@@ -36,7 +36,7 @@ object Day11 {
                                         (startingPoint.y until startingPoint.y + areaSize).map { y -> Point(startingPoint.x + areaSize - 1, y) }
                                 ).toSet()
 
-                        val areaPower = previousAreaSizeData.getValue(startingPoint) + additionalPoints.sumBy { powerLevel(it, gridSerialNo) }
+                        val areaPower = previousAreaSizeData.getValue(startingPoint) + additionalPoints.sumOf { powerLevel(it, gridSerialNo) }
 
                         startingPoint to areaPower
                     }

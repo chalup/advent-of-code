@@ -57,7 +57,7 @@ object Day7 {
 
             val workersAllocation = mutableListOf<WorkerAllocation>()
 
-            fun taskLength(task: String) = baseTaskLength + (task.first().toUpperCase() - 'A') + 1
+            fun taskLength(task: String) = baseTaskLength + (task.first().uppercaseChar() - 'A') + 1
 
             var timePassed = 0
 

@@ -95,7 +95,7 @@ data class Cpu(val registers: MutableList<Int> = MutableList(4) { 0 },
         private fun parseBinding(bindingInput: String) = bindingInput.split(' ').last().toInt()
 
         private fun parseInstruction(instructionInput: String) = instructionInput.split(' ').let { elements ->
-            val opcode = Opcode.valueOf(elements.first().toUpperCase())
+            val opcode = Opcode.valueOf(elements.first().uppercase())
             val params = elements.drop(1).map { it.toInt() }
 
             Instruction(opcode, params)

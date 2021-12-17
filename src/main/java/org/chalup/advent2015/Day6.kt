@@ -81,5 +81,5 @@ object Day6 {
                            is Toggle -> copy(status = status + 2)
                        }
                    })) { grid, command -> grid.apply(command) }
-        .lights.sumBy { it.status }
+        .lights.sumOf { it.status }
 }

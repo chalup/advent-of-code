@@ -43,6 +43,6 @@ object Day22 {
     fun estimateTotalRisk(depth: Int, target: Point) = Cave(depth, target).let { cave ->
         Rect(topLeft = CAVE_MOUTH, bottomRight = target)
             .points()
-            .sumBy { cave[it].riskLevel }
+            .sumOf { cave[it].riskLevel }
     }
 }

@@ -1,9 +1,6 @@
 package org.chalup.advent2018
 
 import org.chalup.advent2018.Cpu.Companion.parseProgram
-import org.chalup.advent2018.Cpu.Instruction
-import org.chalup.advent2018.Cpu.Opcode
-import org.chalup.advent2018.Cpu.Program
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
@@ -35,7 +32,7 @@ object Day19 {
 private fun Cpu.calculateSumOfFactors() {
     val x = registers[1]
 
-    registers[0] = (1..x.sqrt()).sumBy { if (x % it == 0) it + x / it else 0 }
+    registers[0] = (1..x.sqrt()).sumOf { if (x % it == 0) it + x / it else 0 }
     registers[2] = x + 1
     registers[3] = 1
     registers[4] = x + 1

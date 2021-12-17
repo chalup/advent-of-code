@@ -1,17 +1,15 @@
 package org.chalup.advent2020
 
-import org.chalup.advent2018.scan
-
 object Day6 {
     fun task1(input: List<String>): Int = parseAnswers(input)
-        .sumBy { groupAnswers ->
+        .sumOf { groupAnswers ->
             groupAnswers
                 .flatMapTo(mutableSetOf()) { it.asIterable() }
                 .size
         }
 
     fun task2(input: List<String>): Int = parseAnswers(input)
-        .sumBy { groupAnswers ->
+        .sumOf { groupAnswers ->
             groupAnswers
                 .map { it.toSet() }
                 .reduce { a, b -> a intersect b }

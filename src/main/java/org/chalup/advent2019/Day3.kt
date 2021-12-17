@@ -53,7 +53,7 @@ object Day3 {
         .let { wires ->
             wires
                 .intersections()
-                .map { intersection -> wires.sumBy { wire -> wire.points.indexOf(intersection) + 1 } }
+                .map { intersection -> wires.sumOf { wire -> wire.points.indexOf(intersection) + 1 } }
                 .minOrNull()!!
         }
 
