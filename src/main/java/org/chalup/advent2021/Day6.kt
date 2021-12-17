@@ -1,11 +1,12 @@
 package org.chalup.advent2021
 
 object Day6 {
-    fun task1(input: String): Long = simulate(input, days = 80)
-    fun task2(input: String): Long = simulate(input, days = 256)
+    fun task1(input: List<String>): Long = simulate(input, days = 80)
+    fun task2(input: List<String>): Long = simulate(input, days = 256)
 
-    private fun simulate(input: String, days: Int): Long {
+    private fun simulate(input: List<String>, days: Int): Long {
         val initialState = input
+            .single()
             .splitToSequence(',')
             .groupingBy { it.toInt() }
             .eachCount()

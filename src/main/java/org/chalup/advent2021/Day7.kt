@@ -4,7 +4,7 @@ import org.chalup.utils.minMax
 import kotlin.math.abs
 
 object Day7 {
-    fun task1(input: String): Int {
+    fun task1(input: List<String>): Int {
         val positions = positions(input).sorted()
 
         val optimalPosition = positions[positions.size / 2]
@@ -12,7 +12,7 @@ object Day7 {
         return positions.sumOf { abs(it - optimalPosition) }
     }
 
-    fun task2(input: String): Int {
+    fun task2(input: List<String>): Int {
         val positions = positions(input)
 
         return positions
@@ -27,7 +27,8 @@ object Day7 {
             }
     }
 
-    private fun positions(input: String): List<Int> = input
+    private fun positions(input: List<String>): List<Int> = input
+        .single()
         .splitToSequence(',')
         .map(String::toInt)
         .toList()
