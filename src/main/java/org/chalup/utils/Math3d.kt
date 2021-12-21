@@ -1,5 +1,7 @@
 package org.chalup.utils
 
+import kotlin.math.abs
+
 data class Vector3(val x: Long, val y: Long, val z: Long) {
     fun toVector4() = Vector4(x, y, z, 1L)
 
@@ -14,6 +16,8 @@ data class Vector3(val x: Long, val y: Long, val z: Long) {
         y = y + other.y,
         z = z + other.z,
     )
+
+    infix fun manhattanDistance(other: Vector3) = abs(x - other.x) + abs(y - other.y) + abs(z - other.z)
 
     operator fun unaryMinus() = Vector3(-x, -y, -z)
 
