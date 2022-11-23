@@ -65,7 +65,7 @@ class IntcodeInterpreter(memoryDump: Memory) {
         }
     }
 
-    class Memory(private val data: MutableMap<Long, Long>) {
+    data class Memory(private val data: MutableMap<Long, Long>) {
         constructor(memory: Memory) : this(memory.data.toMutableMap())
         constructor(initialValues: List<Long>) : this(mutableMapOf<Long, Long>().apply {
             initialValues.forEachIndexed { index, value -> put(index.toLong(), value) }
