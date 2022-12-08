@@ -13,6 +13,7 @@ object Day6 {
         return data
             .windowedSequence(size = markerSize, step = 1, partialWindows = false)
             .indexOfFirst { it.toSet().size == markerSize }
+            .also { check(it != -1) }
             .plus(markerSize)
     }
 }
