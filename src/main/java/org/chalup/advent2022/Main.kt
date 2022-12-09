@@ -28,6 +28,7 @@ fun main(args: Array<String>) {
         advent(day = 8, part = 1, Day8::task1)
         advent(day = 8, part = 2, Day8::task2)
         advent(day = 9, part = 1, Day9::task1)
+        advent(day = 9, part = 2, Day9::task2)
     }
 
     println("=== TOTAL [${elapsedTotal}ms] ===")
