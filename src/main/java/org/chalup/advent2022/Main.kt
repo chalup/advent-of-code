@@ -26,7 +26,8 @@ fun main(args: Array<String>) {
         advent(day = 7, part = 1, Day7::task1)
         advent(day = 7, part = 2, Day7::task2)
         advent(day = 8, part = 1, Day8::task1)
-        advent(day = 8, part = 2, Day8::task2) // 325000 is too high
+        advent(day = 8, part = 2, Day8::task2)
+        advent(day = 9, part = 1, Day9::task1)
     }
 
     println("=== TOTAL [${elapsedTotal}ms] ===")
