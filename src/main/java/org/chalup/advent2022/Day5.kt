@@ -1,5 +1,7 @@
 package org.chalup.advent2022
 
+import org.chalup.utils.textBlocks
+
 object Day5 {
     fun task1(input: List<String>) = parse(input)
         .let { (stacks, instructions) ->
@@ -25,7 +27,7 @@ object Day5 {
         }
 
     private fun parse(input: List<String>): InputData {
-        val (stacksBlock, instructionsBlock) = blocks(input)
+        val (stacksBlock, instructionsBlock) = textBlocks(input)
 
         val numberOfStacks = stacksBlock.last()
             .trim()
@@ -63,16 +65,4 @@ object Day5 {
         val from: Int,
         val to: Int
     )
-
-    private fun blocks(input: List<String>): List<List<String>> = buildList<MutableList<String>> {
-        add(mutableListOf())
-
-        for (line in input) {
-            if (line.isEmpty()) {
-                add(mutableListOf())
-            } else {
-                last().add(line)
-            }
-        }
-    }
 }
