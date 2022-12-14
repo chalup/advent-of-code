@@ -33,3 +33,5 @@ fun Iterable<Long>.minMaxLong(): Pair<Long, Long> {
 
     return min to max
 }
+
+fun range(a: Int, b: Int) = if (a < b) a..b else b..a
