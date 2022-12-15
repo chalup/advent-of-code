@@ -1,5 +1,8 @@
 package org.chalup.advent2022
 
+import org.chalup.utils.overlaps
+import org.chalup.utils.contains
+
 object Day4 {
     fun task1(input: List<String>) = input
         .map { parsePair(it) }
@@ -12,12 +15,6 @@ object Day4 {
         .count { (first, second) ->
             first overlaps second || second overlaps first
         }
-
-    private operator fun IntRange.contains(other: IntRange): Boolean =
-        other.first >= this.first && other.last <= this.last
-
-    private infix fun IntRange.overlaps(other: IntRange): Boolean =
-        other.first in this || other.last in this
 
     private fun parseRange(input: String): IntRange = input
         .splitToSequence('-')

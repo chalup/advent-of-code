@@ -35,3 +35,13 @@ fun Iterable<Long>.minMaxLong(): Pair<Long, Long> {
 }
 
 fun range(a: Int, b: Int) = if (a < b) a..b else b..a
+
+operator fun IntRange.contains(other: IntRange): Boolean =
+    other.first >= this.first && other.last <= this.last
+
+infix fun IntRange.overlaps(other: IntRange): Boolean =
+    other.first in this || other.last in this
+
+infix fun IntRange.intersection(other: IntRange): IntRange? =
+    (maxOf(this.first, other.first)..minOf(this.last, other.last)).takeIf { this overlaps other }
+
