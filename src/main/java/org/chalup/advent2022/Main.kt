@@ -1,7 +1,7 @@
 package org.chalup.advent2022
 
-import org.chalup.utils.advent as aoc
 import kotlin.system.measureTimeMillis
+import org.chalup.utils.advent as aoc
 
 fun main(args: Array<String>) {
     fun advent(day: Int, part: Int, solution: (List<String>) -> Any) = aoc(
@@ -40,7 +40,8 @@ fun main(args: Array<String>) {
         advent(day = 14, part = 1, Day14::task1)
         advent(day = 14, part = 2, Day14::task2)
         advent(day = 15, part = 1, Day15::task1)
-        advent(day = 15, part = 2, Day15::task2)
+        // advent(day = 15, part = 2, Day15::task2) // commented out, because it's too slow
+        advent(day = 16, part = 1, Day16::task1)
     }
 
     println("=== TOTAL [${elapsedTotal}ms] ===")
