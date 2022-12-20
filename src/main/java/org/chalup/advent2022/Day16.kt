@@ -12,10 +12,14 @@ object Day16 {
                 val timeLeft: Int = 30,
                 val location: String = "AA",
                 val releasedPressure: Int = 0,
-                val openValves: Set<String>
-            )
+                val openValves: Set<String> = volcano.valves,
+                val remainingFlow: Int = openValves.sumOf(volcano::getFlowRate),
+            ) {
+                val potential: Int
+                    get() = remainingFlow * (timeLeft - 1)
+            }
 
-            val queue = LinkedList<TraversalState>().apply { add(TraversalState(openValves = volcano.valves)) }
+            val queue = LinkedList<TraversalState>().apply { add(TraversalState()) }
 
             var maxReleasedPressure = 0
 
@@ -23,6 +27,8 @@ object Day16 {
                 val state = queue.remove()
 
                 maxReleasedPressure = maxOf(state.releasedPressure, maxReleasedPressure)
+
+                if (state.releasedPressure + state.potential < maxReleasedPressure) continue
 
                 for (valve in state.openValves) {
                     val timeLeftAfterGoingAndOpeningTheValve = state.timeLeft - volcano.getDistance(state.location, valve) - 1
@@ -32,10 +38,11 @@ object Day16 {
                             location = valve,
                             timeLeft = timeLeftAfterGoingAndOpeningTheValve,
                             releasedPressure = state.releasedPressure + timeLeftAfterGoingAndOpeningTheValve * volcano.getFlowRate(valve),
-                            openValves = state.openValves - valve
+                            openValves = state.openValves - valve,
+                            remainingFlow = state.remainingFlow - volcano.getFlowRate(valve)
                         )
 
-                        queue.add(newState)
+                        queue.addFirst(newState)
                     }
                 }
             }
