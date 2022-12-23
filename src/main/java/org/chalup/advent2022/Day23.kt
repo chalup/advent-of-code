@@ -17,6 +17,13 @@ object Day23 {
                 .let { it.width * it.height }
                 .minus(elvesLocations.size)
         }
+
+    fun task2(input: List<String>) = input
+        .let(::parseElvesLocations)
+        .let(::simulate)
+        .zipWithNext()
+        .takeWhile { (prev, next) -> prev != next }
+        .count().inc()
 }
 
 private fun simulate(initialState: Set<Point>): Sequence<Set<Point>> =
@@ -25,8 +32,8 @@ private fun simulate(initialState: Set<Point>): Sequence<Set<Point>> =
     }.map { (_, elves) -> elves }
 
 private val preferredDirectionChange: List<Pair<Direction, List<Vector>>> = listOf(
-    Direction.U to listOf(Vector(-1, -1), Vector(0, -1), Vector(0, -1)),
-    Direction.D to listOf(Vector(-1, +1), Vector(0, +1), Vector(0, +1)),
+    Direction.U to listOf(Vector(-1, -1), Vector(0, -1), Vector(+1, -1)),
+    Direction.D to listOf(Vector(-1, +1), Vector(0, +1), Vector(+1, +1)),
     Direction.L to listOf(Vector(-1, -1), Vector(-1, 0), Vector(-1, +1)),
     Direction.R to listOf(Vector(+1, -1), Vector(+1, 0), Vector(+1, +1)),
 )
@@ -56,7 +63,7 @@ private fun simulateStep(step: Int, elves: Set<Point>): Set<Point> {
 
     val acceptedMoves = buildMap {
         for ((from, to) in proposedMoves) {
-            if (containsKey(from)) {
+            if (containsKey(to)) {
                 put(to, null)
             } else {
                 put(to, from)
