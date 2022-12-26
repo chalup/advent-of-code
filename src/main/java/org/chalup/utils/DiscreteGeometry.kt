@@ -69,3 +69,11 @@ enum class Direction(val symbol: String, val vector: Vector) {
         fun fromSymbol(symbol: String) = values().firstOrNull { it.symbol == symbol } ?: throw IllegalArgumentException("Unrecognized direction: $symbol")
     }
 }
+
+val Direction.opposite: Direction
+    get() = when (this) {
+        Direction.U -> Direction.D
+        Direction.R -> Direction.L
+        Direction.D -> Direction.U
+        Direction.L -> Direction.R
+    }
