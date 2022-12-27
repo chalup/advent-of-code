@@ -3,6 +3,14 @@ package org.chalup.advent2022
 import kotlin.system.measureTimeMillis
 import org.chalup.utils.advent as aoc
 
+/**
+ * TODO:
+ * 1. Optimize Day 16 part 2 (split valves into two sets, solve independently?)
+ * 2. Optimize Day 19 (don't simulate turns, simulate building decisions)
+ * 3. Optimize Day 15 part 2 (calculate intersection points and check just around these?)
+ * 4. Cube walking/folding for day 22 instead of hardcoded edges
+ */
+
 fun main(args: Array<String>) {
     fun advent(day: Int, part: Int, solution: (List<String>) -> Any) = aoc(
         args[0],
