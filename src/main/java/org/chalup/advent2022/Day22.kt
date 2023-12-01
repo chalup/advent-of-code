@@ -20,10 +20,10 @@ object Day22 {
         .let(::textBlocks)
         .let { (mapData, instructions) ->
             val map = MonkeyMap(mapData, cubeWorld(mapData))
-            val instructions = parseInstructions(instructions.single())
+            val moves = parseInstructions(instructions.single())
 
             path.clear()
-            followTheMap(map, instructions)
+            followTheMap(map, moves)
         }
         .let(::score)
 }
@@ -105,8 +105,8 @@ private fun cubeWorld(data: List<String>): Map<LocationAndBearing, LocationAndBe
 
 private val path = mutableListOf<LocationAndBearing>()
 
-private fun followTheMap(map: MonkeyMap, instructions: Sequence<Move>) =
-    instructions
+private fun followTheMap(map: MonkeyMap, moves: Sequence<Move>) =
+    moves
         .scan(LocationAndBearing(map.startingPosition, Direction.R)) { lb, move ->
             path += lb
 

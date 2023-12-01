@@ -65,10 +65,10 @@ object Day17 {
 
             while (true) {
                 // push the shape
-                val dx = when (val jet = jetIterator.next()) {
+                val dx = when (val direction = jetIterator.next()) {
                     '>' -> +1
                     '<' -> -1
-                    else -> throw IllegalArgumentException("Unrecognized jet char '$jet' received")
+                    else -> throw IllegalArgumentException("Unrecognized jet char '$direction' received")
                 }
                 if (canMove(Vector(dx, 0))) {
                     shapePosition += Vector(dx, 0)
