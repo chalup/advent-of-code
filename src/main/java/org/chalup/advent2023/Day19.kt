@@ -1,5 +1,6 @@
 package org.chalup.advent2023
 
+import org.chalup.advent2023.Workflow.ConditionSpec.Operator
 import org.chalup.advent2023.Workflow.Destination.FinalDecision
 import org.chalup.advent2023.Workflow.Destination.NamedWorkflow
 import org.chalup.utils.textBlocks
@@ -12,11 +13,18 @@ object Day19 {
             .map { parseWorkflow(it) }
             .associateBy { it.name }
 
+        infix fun Part.matches(spec: Workflow.ConditionSpec?): Boolean =
+            when (spec?.operator) {
+                null -> true
+                Operator.GT -> getValue(spec.property) > spec.value
+                Operator.LT -> getValue(spec.property) < spec.value
+            }
+
         tailrec fun processPart(part: Part, workflowName: String = "in"): FinalDecision {
             val workflow = workflowsByName.getValue(workflowName)
 
             for (step in workflow.steps) {
-                if (step.condition?.invoke(part) != false) {
+                if (part matches step.conditionSpec) {
                     return when (val destination = step.destination) {
                         is NamedWorkflow -> processPart(part, workflowName = destination.name)
                         is FinalDecision -> destination
@@ -33,12 +41,16 @@ object Day19 {
             .sumOf { it.values.sum() }
     }
 
-    private fun parseCondition(input: String): (Part) -> Boolean {
-        when {
-            '<' in input -> return { p -> p.getValue(input.substringBefore('<')) < input.substringAfter('<').toLong() }
-            '>' in input -> return { p -> p.getValue(input.substringBefore('>')) > input.substringAfter('>').toLong() }
-            else -> throw IllegalArgumentException(input)
-        }
+    private fun parseCondition(input: String): Workflow.ConditionSpec {
+        val operator = Operator.values().first { it.symbol in input }
+        val property = input.substringBefore(operator.symbol)
+        val value = input.substringAfter(operator.symbol).toLong()
+
+        return Workflow.ConditionSpec(
+            property,
+            value,
+            operator
+        )
     }
 
     private fun parseWorkflowStep(input: String): Workflow.Step {
@@ -76,9 +88,19 @@ private data class Workflow(
     val steps: List<Step>,
 ) {
     data class Step(
-        val condition: ((Part) -> Boolean)?,
+        val conditionSpec: ConditionSpec?,
         val destination: Destination
     )
+
+    data class ConditionSpec(
+        val property: String,
+        val value: Long,
+        val operator: Operator,
+    ) {
+        enum class Operator(val symbol: Char) {
+            GT('>'), LT('<')
+        }
+    }
 
     sealed interface Destination {
         data class NamedWorkflow(val name: String) : Destination
