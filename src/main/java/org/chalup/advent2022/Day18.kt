@@ -1,8 +1,9 @@
 package org.chalup.advent2022
 
-import org.chalup.advent2021.Day22.Cube
-import org.chalup.advent2021.Day22.size
+import org.chalup.utils.Cube
+import org.chalup.utils.size
 import org.chalup.utils.Vector3
+import org.chalup.utils.extendBy
 
 object Day18 {
     fun task1(input: List<String>) = input
@@ -88,8 +89,6 @@ private fun Cube.surfaceArea(): Long =
     (xs.size() * ys.size() * 2) + (xs.size() * zs.size() * 2) + (zs.size() * ys.size() * 2)
 
 private fun Cube.volume(): Long = xs.size() * ys.size() * zs.size()
-
-private fun LongRange.extendBy(n: Long) = (first - n)..(last + n)
 
 private fun Collection<Point3D>.boundingCube(): Cube {
     var minX: Long = first().x

@@ -1,7 +1,10 @@
 package org.chalup.advent2021
 
-import org.chalup.utils.Vector3
+import org.chalup.utils.Cube
+import org.chalup.utils.intersects
+import org.chalup.utils.contains
 import org.chalup.utils.match
+import org.chalup.utils.size
 
 object Day22 {
     fun task1(input: List<String>): Long = input
@@ -14,19 +17,6 @@ object Day22 {
         .map(this::parseInstruction)
         .fold(emptySet<Cube>()) { cubes, instruction -> cubes.plus(instruction) }
         .fold(0L) { count, cube -> count + with(cube) { xs.size() * ys.size() * zs.size() } }
-
-    internal data class Cube(
-        val xs: LongRange,
-        val ys: LongRange,
-        val zs: LongRange,
-    ) {
-        fun points() = buildSet {
-            for (x in xs)
-                for (y in ys)
-                    for (z in zs)
-                        add(Vector3(x, y, z))
-        }
-    }
 
     private data class Instruction(
         val enable: Boolean,
@@ -57,15 +47,6 @@ object Day22 {
         else -> true
     }
 
-    internal infix operator fun LongRange.contains(other: LongRange): Boolean =
-        other.first >= this.first && other.last <= this.last
-
-    internal infix fun Cube.intersects(other: Cube): Boolean =
-        other.xs intersects this.xs && other.ys intersects this.ys && other.zs intersects this.zs
-
-    internal infix fun LongRange.intersects(other: LongRange): Boolean =
-        this.first in other || this.last in other || other.first in this || other.last in this
-
     internal operator fun Cube.minus(other: Cube): Set<Cube> = buildSet {
         val xRanges = (xs sliceWith other.xs)
         val yRanges = (ys sliceWith other.ys)
@@ -83,8 +64,6 @@ object Day22 {
             }
         }
     }
-
-    internal fun LongRange.size(): Long = (last - first + 1).takeUnless { isEmpty() } ?: 0L
 
     private infix fun LongRange.sliceWith(other: LongRange): Set<LongRange> = when {
         this in other -> sequenceOf(this)

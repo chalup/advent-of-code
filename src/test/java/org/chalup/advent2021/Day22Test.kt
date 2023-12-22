@@ -2,12 +2,13 @@ package org.chalup.advent2021
 
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.matchers.shouldBe
-import org.chalup.advent2021.Day22.Cube
 import org.chalup.advent2021.Day22.contains
-import org.chalup.advent2021.Day22.intersects
 import org.chalup.advent2021.Day22.minus
-import org.chalup.advent2021.Day22.size
+import org.chalup.utils.Cube
 import org.chalup.utils.Vector3
+import org.chalup.utils.contains
+import org.chalup.utils.intersects
+import org.chalup.utils.size
 
 class Day22Test : FreeSpec({
     "Ranges size" - {

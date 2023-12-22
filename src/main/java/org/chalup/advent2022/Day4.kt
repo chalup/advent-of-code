@@ -1,7 +1,7 @@
 package org.chalup.advent2022
 
-import org.chalup.utils.overlaps
 import org.chalup.utils.contains
+import org.chalup.utils.intersects
 
 object Day4 {
     fun task1(input: List<String>) = input
@@ -12,17 +12,15 @@ object Day4 {
 
     fun task2(input: List<String>) = input
         .map { parsePair(it) }
-        .count { (first, second) ->
-            first overlaps second || second overlaps first
-        }
+        .count { (first, second) -> first intersects second }
 
-    private fun parseRange(input: String): IntRange = input
+    private fun parseRange(input: String): LongRange = input
         .splitToSequence('-')
-        .map { it.toInt() }
+        .map { it.toLong() }
         .iterator()
         .let { it.next()..it.next() }
 
-    private fun parsePair(input: String): Pair<IntRange, IntRange> = input
+    private fun parsePair(input: String): Pair<LongRange, LongRange> = input
         .splitToSequence(',')
         .map { parseRange(it) }
         .iterator()

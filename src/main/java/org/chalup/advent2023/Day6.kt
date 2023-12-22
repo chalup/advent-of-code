@@ -1,6 +1,6 @@
 package org.chalup.advent2023
 
-import org.chalup.advent2021.Day22.size
+import org.chalup.utils.size
 import kotlin.math.sqrt
 
 object Day6 {
