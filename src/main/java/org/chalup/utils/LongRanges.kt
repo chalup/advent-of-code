@@ -31,3 +31,5 @@ infix fun LongRange.except(other: LongRange): List<LongRange> {
 
 fun LongRange.extendBy(n: Long) = (first - n)..(last + n)
 fun LongRange.size(): Long = (last - first + 1).takeUnless { isEmpty() } ?: 0L
+
+infix fun LongRange.transposeBy(skew: Long) = (first + skew)..(last + skew)

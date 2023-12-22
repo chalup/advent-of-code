@@ -2,6 +2,7 @@ package org.chalup.advent2023
 
 import org.chalup.utils.except
 import org.chalup.utils.intersection
+import org.chalup.utils.transposeBy
 
 object Day5 {
     fun task1(input: List<String>): Long = input
@@ -122,5 +123,3 @@ private data class MappingRange(
 
     val skew = destinationStartIndex - sourceStartIndex
 }
-
-private infix fun LongRange.transposeBy(skew: Long) = (first + skew)..(last + skew)
