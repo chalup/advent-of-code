@@ -3,9 +3,13 @@ package org.chalup.advent2023
 import org.chalup.utils.Cube
 import org.chalup.utils.intersects
 import org.chalup.utils.transposeBy
+import java.util.PriorityQueue
 
 object Day22 {
-    fun task1(input: List<String>): Int {
+    fun task1(input: List<String>) = solve(input).first
+    fun task2(input: List<String>) = solve(input).second
+
+    private fun solve(input: List<String>): Pair<Int, Int> {
         val cubes = input
             .map { line ->
                 val (x1, y1, z1) = line.substringBefore('~').split(',').map { it.toLong() }
@@ -20,7 +24,8 @@ object Day22 {
             .sortedBy { it.zs.first }
 
         val settledCubes = mutableSetOf<Cube>()
-        val supports = mutableListOf<Pair<Cube, Cube>>()
+        val supportsByCube = mutableMapOf<Cube, Set<Cube>>()
+        val supportedCubesByCube = mutableMapOf<Cube, MutableSet<Cube>>()
 
         for (c in cubes) {
             val dropArea = c.copy(zs = 0 until c.zs.first)
@@ -31,15 +36,35 @@ object Day22 {
 
             settledCubes.add(droppedCube)
 
-            potentialSupports.mapNotNullTo(supports) { support -> support.takeIf { it.zs.last == supportLevel }?.let { it to droppedCube } }
+            potentialSupports
+                .filter { it.zs.last == supportLevel }
+                .also { supportsByCube[droppedCube] = it.toSet() }
+                .forEach { supportedCubesByCube.getOrPut(it) { mutableSetOf() }.add(droppedCube) }
         }
 
-        val criticalSupports = supports.groupBy { (_, supported) -> supported }
-            .values
-            .map { it.map { (support, _) -> support } }
-            .mapNotNullTo(mutableSetOf()) { it.singleOrNull() }
+        val criticalSupports = supportsByCube
+            .mapNotNullTo(mutableSetOf()) { (_, supports) -> supports.singleOrNull() }
 
-        return settledCubes.count { it !in criticalSupports }
+        val cubesThatCanBeSafelyDisintegrated = settledCubes.count { it !in criticalSupports }
+
+        val fallingCubes = criticalSupports.sumOf { firstRemovedCube ->
+            val removedCubes = mutableSetOf<Cube>()
+            val queue = PriorityQueue<Cube>(compareBy { it.zs.first }).apply { add(firstRemovedCube) }
+            while (queue.isNotEmpty()) {
+                val cube = queue.poll()
+                removedCubes.add(cube)
+
+                for (supportedCube in supportedCubesByCube[cube].orEmpty()) {
+                    if (supportsByCube.getValue(supportedCube).all { it in removedCubes }) {
+                        queue.add(supportedCube)
+                    }
+                }
+            }
+
+            removedCubes.size - 1
+        }
+
+        return cubesThatCanBeSafelyDisintegrated to fallingCubes
     }
 
     fun Cube.transposeBy(dx: Long = 0, dy: Long = 0, dz: Long = 0) = Cube(
