@@ -6,9 +6,13 @@ import org.chalup.utils.Rect
 import org.chalup.utils.contains
 import org.chalup.utils.plus
 import java.util.LinkedList
+import java.util.PriorityQueue
 
 object Day23 {
-    fun task1(map: List<String>): Int {
+    fun task1(map: List<String>): Int = findLongestPath(map, slipperySlopes = true)
+    fun task2(map: List<String>): Int = findLongestPath(map, slipperySlopes = false)
+
+    private fun findLongestPath(map: List<String>, slipperySlopes: Boolean): Int {
         operator fun List<String>.get(p: Point) = this[p.y][p.x]
         val bounds = Rect(0, 0, map.first().lastIndex, map.lastIndex)
 
@@ -72,28 +76,65 @@ object Day23 {
             }
         }
 
-        val possiblePaths = buildList<Path> {
-            val queue = LinkedList<Path>().apply { add(Path(startLocation, emptySet())) }
-            while (queue.isNotEmpty()) {
-                val currentPath = queue.poll()
+        var maxPathLength = 0
+        val queue = PriorityQueue<Path>(compareByDescending { it.traversedSegments.size }).apply { add(Path(startLocation, emptySet(), segments)) }
+        while (queue.isNotEmpty()) {
+            val currentPath = queue.poll()
 
-                segments
+            val newPaths = buildList {
+                currentPath
+                    .availableSegments
                     .filter { it.start.location == currentPath.currentLocation }
-                    .map { Path(currentLocation = it.end, traversedSegments = currentPath.traversedSegments + it) }
-                    .forEach {
-                        if (it.currentLocation == finishLocation) {
-                            add(it)
-                        } else {
-                            queue.add(it)
-                        }
+                    .filter { it !in currentPath.traversedSegments }
+                    .mapTo(this) { segment ->
+                        Path(
+                            currentLocation = segment.end,
+                            traversedSegments = currentPath.traversedSegments + segment,
+                            availableSegments = currentPath.availableSegments.filterNotTo(mutableSetOf()) { it.end == currentPath.currentLocation || it.start.location == currentPath.currentLocation }
+                        )
                     }
+
+                if (!slipperySlopes) {
+                    currentPath
+                        .availableSegments
+                        .filter { it.end == currentPath.currentLocation }
+                        .filter { it !in currentPath.traversedSegments }
+                        .mapTo(this) { segment ->
+                            Path(
+                                currentLocation = segment.start.location,
+                                traversedSegments = currentPath.traversedSegments + segment,
+                                availableSegments = currentPath.availableSegments.filterNotTo(mutableSetOf()) { it.end == currentPath.currentLocation || it.start.location == currentPath.currentLocation }
+                            )
+                        }
+                }
             }
+
+            newPaths
+                .asSequence()
+                .filter { it.potential > maxPathLength }
+                .forEach { path ->
+                    if (path.currentLocation == finishLocation) {
+                        maxPathLength = maxOf(
+                            path.traversedSegments.sumOf(PathSegment::length),
+                            maxPathLength
+                        )
+                    } else {
+                        queue.add(path)
+                    }
+                }
         }
 
-        return possiblePaths.maxOf { path -> path.traversedSegments.sumOf { it.length } }
+        return maxPathLength
     }
 }
 
-private data class Path(val currentLocation: Point, val traversedSegments: Set<PathSegment>)
+private data class Path(
+    val currentLocation: Point,
+    val traversedSegments: Set<PathSegment>,
+    val availableSegments: Set<PathSegment>,
+) {
+    val potential = (traversedSegments + availableSegments).sumOf { it.length }
+}
+
 private data class PathSegmentStart(val location: Point, val direction: Direction)
 private data class PathSegment(val start: PathSegmentStart, val end: Point, val length: Int)
