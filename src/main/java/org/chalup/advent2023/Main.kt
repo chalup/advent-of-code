@@ -10,6 +10,14 @@ fun main(args: Array<String>) {
         day, part, solution
     )
 
+    """
+        19, 13, 30 @ -2,  1, -2
+        18, 19, 22 @ -1, -1, -2
+        20, 25, 34 @ -2, -2, -4
+        12, 31, 28 @ -1, -2, -1
+        20, 19, 15 @  1, -5, -3
+    """.trimIndent().lines().let { Day24.task1(it, testAreaRange = 7L..27L) }.also { println(it) }
+
     val elapsedTotal = measureTimeMillis {
         advent(day = 1, part = 1, Day1::task1)
         advent(day = 1, part = 2, Day1::task2)
@@ -56,7 +64,9 @@ fun main(args: Array<String>) {
         advent(day = 22, part = 1, Day22::task1)
         advent(day = 22, part = 2, Day22::task2)
         advent(day = 23, part = 1, Day23::task1)
-        advent(day = 23, part = 2, Day23::task2)
+        // advent(day = 23, part = 2, Day23::task2) // ~1500ms
+        advent(day = 24, part = 1) { Day24.task1(it, testAreaRange = 200000000000000..400000000000000) }
+        advent(day = 24, part = 2, Day24::task2)
     }
 
     println("=== TOTAL [${elapsedTotal}ms] ===")
