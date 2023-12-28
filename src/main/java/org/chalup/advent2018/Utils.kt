@@ -1,7 +1,5 @@
 package org.chalup.advent2018
 
-import org.chalup.utils.Vector
-
 fun <T> Collection<T>.cycle(): Iterable<T> = object : Iterable<T> {
     override fun iterator() = object : Iterator<T> {
         var iterator: Iterator<T> = this@cycle.iterator()
