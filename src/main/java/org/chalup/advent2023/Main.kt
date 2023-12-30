@@ -59,6 +59,7 @@ fun main(args: Array<String>) {
         // advent(day = 23, part = 2, Day23::task2) // ~1500ms
         advent(day = 24, part = 1) { Day24.task1(it, testAreaRange = 200000000000000..400000000000000) }
         advent(day = 24, part = 2, Day24::task2)
+        // advent(day = 25, part = 1, Day25::task1) // non-deterministic crap
     }
 
     println("=== TOTAL [${elapsedTotal}ms] ===")
