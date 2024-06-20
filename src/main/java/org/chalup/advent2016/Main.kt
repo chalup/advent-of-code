@@ -48,6 +48,8 @@ fun main(args: Array<String>) {
         // Stoopid MD5 puzzles
         // advent(day = 14, part = 1, solution = Day14::task1)
         // advent(day = 14, part = 2, solution = Day14::task2)
+        advent(day = 15, part = 1, solution = Day15::task1)
+        advent(day = 15, part = 2, solution = Day15::task2)
     }
 
     println("=== TOTAL [${elapsedTotal}ms] ===")
