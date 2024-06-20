@@ -41,6 +41,8 @@ fun main(args: Array<String>) {
         // This takes forever as well
         // advent(day = 11, part = 1, solution = Day11::task1)
         // advent(day = 11, part = 2, solution = Day11::task2)
+        advent(day = 12, part = 1, solution = Day12::task1)
+        advent(day = 12, part = 2, solution = Day12::task2)
     }
 
     println("=== TOTAL [${elapsedTotal}ms] ===")
