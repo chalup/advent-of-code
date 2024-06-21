@@ -8,12 +8,7 @@ object Day21 {
             "swap position" -> text.swapPositions(a = i[2].toInt(), b = i[5].toInt())
             "swap letter" -> text.swapLetters(a = i[2].single(), b = i[5].single())
 
-            "rotate based" -> {
-                val index = text.indexOf(i[6].single())
-                val rotation = (1 + index + (if (index >= 4) 1 else 0)) % text.length
-
-                text.rotateRight(rotation)
-            }
+            "rotate based" -> text.letterBasedRotation(i[6].single())
 
             "rotate right" -> text.rotateRight(i[2].toInt() % text.length)
             "rotate left" -> text.rotateLeft(i[2].toInt() % text.length)
@@ -22,6 +17,39 @@ object Day21 {
 
             else -> throw IllegalArgumentException(instruction)
         }
+    }
+
+    fun task2(input: List<String>): String = input.asReversed().fold("fbgdceah") { text, instruction ->
+        val i = instruction.split(" ")
+
+        when ("${i[0]} ${i[1]}") {
+            "swap position" -> text.swapPositions(a = i[2].toInt(), b = i[5].toInt())
+            "swap letter" -> text.swapLetters(a = i[2].single(), b = i[5].single())
+
+            "rotate based" -> {
+                val char = i[6].single()
+
+                text.indices.firstNotNullOf { possibleRotation ->
+                    text.rotateLeft(possibleRotation).takeIf {
+                        it.letterBasedRotation(char) == text
+                    }
+                }
+            }
+
+            "rotate right" -> text.rotateLeft(i[2].toInt() % text.length)
+            "rotate left" -> text.rotateRight(i[2].toInt() % text.length)
+            "reverse positions" -> text.reversePositions(from = i[2].toInt(), to = i[4].toInt())
+            "move position" -> text.moveLetter(to = i[2].toInt(), from = i[5].toInt())
+
+            else -> throw IllegalArgumentException(instruction)
+        }
+    }
+
+    private fun String.letterBasedRotation(letter: Char): String {
+        val index = indexOf(letter)
+        val rotation = (1 + index + (if (index >= 4) 1 else 0)) % length
+
+        return rotateRight(rotation)
     }
 
     private fun String.rotateRight(amount: Int) =
