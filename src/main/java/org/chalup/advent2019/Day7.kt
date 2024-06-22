@@ -3,6 +3,7 @@ package org.chalup.advent2019
 import org.chalup.advent2019.IntcodeInterpreter.ProgramResult.ExecutionError
 import org.chalup.advent2019.IntcodeInterpreter.ProgramResult.Finished
 import org.chalup.advent2019.IntcodeInterpreter.ProgramResult.GeneratedOutput
+import org.chalup.utils.permutations
 
 object Day7 {
     fun calculateMaxThrusterInput(programInput: String): Long {
@@ -58,18 +59,5 @@ object Day7 {
                 output
             }
             .maxOrNull()!!
-    }
-
-    private fun <T : Any> permutations(set: Set<T>) = sequence {
-        fun helper(head: List<T>, elements: Set<T>): Sequence<List<T>> = sequence {
-            if (elements.isEmpty()) yield(head)
-            else {
-                for (e in elements) {
-                    yieldAll(helper(head + e, elements - e))
-                }
-            }
-        }
-
-        yieldAll(helper(emptyList(), set))
     }
 }
