@@ -1,10 +1,15 @@
 package org.chalup.advent2017
 
 object Day8 {
-    fun task1(input: List<String>): Int {
+    fun task1(input: List<String>) = simulateProgram(input).let { (maxAtTheEnd, _) -> maxAtTheEnd }
+    fun task2(input: List<String>) = simulateProgram(input).let { (_, maxDuringSimulation) -> maxDuringSimulation }
+
+    private fun simulateProgram(program: List<String>): Pair<Int, Int> {
         val registers = mutableMapOf<String, Int>().withDefault { 0 }
 
-        input.forEach { line ->
+        var max = 0
+
+        program.forEach { line ->
             val (action, condition) = line.split(" if ")
 
             val (conditionRegister, operator, valueAsTest) = condition.trim().split(" ")
@@ -33,8 +38,10 @@ object Day8 {
 
                 registers[actionRegister] = registers.getValue(actionRegister) + multiplier * changeAsText.toInt()
             }
+
+            max = maxOf(max, registers.values.maxOrNull() ?: 0)
         }
 
-        return registers.values.max()
+        return registers.values.max() to max
     }
 }
