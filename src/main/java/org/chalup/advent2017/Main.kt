@@ -39,6 +39,18 @@ fun main(args: Array<String>) {
         advent(day = 10, part = 2, solution = Day10::task2)
         advent(day = 11, part = 1, solution = Day11::task1)
         advent(day = 11, part = 2, solution = Day11::task2)
+        advent(day = 12, part = 1, solution = Day12::task1)
+        advent(day = 12, part = 2, solution = Day12::task2)
+        advent(day = 14, part = 1, solution = Day14::task1)
+        advent(day = 14, part = 2, solution = Day14::task2)
+        advent(day = 15, part = 1, solution = Day15::task1)
+        advent(day = 15, part = 2, solution = Day15::task2)
+        advent(day = 16, part = 1, solution = Day16::task1)
+        advent(day = 16, part = 2, solution = Day16::task2)
+        advent(day = 17, part = 1, solution = Day17::task1)
+        // TODO: idiotic brute force. Maybe leverage the fact that the
+        //       item 0 is always the first one?
+        // advent(day = 17, part = 2, solution = Day17::task2)
     }
 
     println("=== TOTAL [${elapsedTotal}ms] ===")
