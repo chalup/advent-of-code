@@ -12,8 +12,6 @@ object Day17 {
         val i = list.cyclicListIterator()
 
         repeat(n) {
-            if (it % 100_000 == 0) println(it)
-
             repeat(delta % list.size) { i.next() }
             i.add(it + 1)
         }
