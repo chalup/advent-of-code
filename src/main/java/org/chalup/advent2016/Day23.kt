@@ -3,6 +3,22 @@ package org.chalup.advent2016
 object Day23 {
     fun task1(program: List<String>): Int = simulateCpu(program.toMutableList()) { if (it == 'a') 7 else 0 }
 
+    fun task2(program: List<String>): Long {
+        var a = 12L
+        var b = a - 1
+        do {
+            val d = a
+            a = 0
+            val c = b
+
+            a += c * d
+            b--
+        } while (b > 1)
+
+        a += 71 * 75
+        return a
+    }
+
     private fun simulateCpu(program: MutableList<String>, registersInitializer: (Char) -> Int): Int {
         val cpu = CpuState(registersInitializer)
 
