@@ -64,6 +64,8 @@ fun main(args: Array<String>) {
         advent(day = 23, part = 1, solution = Day23::task1)
         // TODO: part 2 which is a classic "understand the purpose of the
         //       assembly code instead of running it" Advent of Code task.
+        advent(day = 24, part = 1, solution = Day24::task1)
+        advent(day = 24, part = 2, solution = Day24::task2)
     }
 
     println("=== TOTAL [${elapsedTotal}ms] ===")
