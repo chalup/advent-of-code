@@ -68,7 +68,7 @@ object Day21 {
         )
 
         return buildSet<List<Item>> {
-            (weapons + null).forEach { weapon ->
+            (weapons).forEach { weapon ->
                 (armors + null).forEach { armor ->
                     (rings + null).forEach { leftRing ->
                         (rings - leftRing + null).forEach { rightRing ->
@@ -99,4 +99,3 @@ object Day21 {
         }
     }
 }
-
