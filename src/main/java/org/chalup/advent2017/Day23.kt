@@ -1,5 +1,7 @@
 package org.chalup.advent2017
 
+import org.chalup.utils.primes
+
 object Day23 {
     fun task1(input: List<String>): Int {
         var executedMuls = 0
@@ -29,5 +31,15 @@ object Day23 {
         }
 
         return executedMuls
+    }
+
+    fun task2(input: List<String>): Int {
+        // the assembly code checks how many numbers in range are not primes
+        val start = 109_900
+        val end = start + 17_000
+
+        val primes = primes(end).toSet()
+
+        return (start..end step 17).count { it !in primes }
     }
 }
