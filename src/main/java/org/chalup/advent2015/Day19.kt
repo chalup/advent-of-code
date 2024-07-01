@@ -1,7 +1,7 @@
 package org.chalup.advent2015
 
 import org.chalup.utils.textBlocks
-import java.util.LinkedList
+import java.util.PriorityQueue
 
 object Day19 {
     fun task1(input: List<String>): Int {
@@ -36,28 +36,16 @@ object Day19 {
         val (replacements, targetMolecule) = parseChemistry(input)
 
         val seen = mutableSetOf<String>()
-        val queue = LinkedList<Pair<String, Int>>().apply {
+        val queue = PriorityQueue<Pair<String, Int>>(compareBy { (molecule, _) -> molecule.length }).apply {
             add(targetMolecule to 0)
         }
 
-        var best = Int.MAX_VALUE
-        var smallestMolecule = targetMolecule
-        var skipped = 0
-
         while (queue.isNotEmpty()) {
-            val (molecule, steps) = queue.removeLast()
-            if (!seen.add(molecule)) {
-                skipped++
-                continue
-            }
-
-            smallestMolecule = if (molecule.length < smallestMolecule.length) molecule else smallestMolecule
-
-            if (seen.size % 100_000 == 0)
-                println("Molecule #${seen.size} ($skipped skipped): queue size=${queue.size}, molecule size=${molecule.length}, best so far=${best.takeUnless { it == Int.MAX_VALUE }}, smallest molecule reached=$smallestMolecule")
+            val (molecule, steps) = queue.poll()
+            if (!seen.add(molecule)) continue
 
             if (molecule == "e") {
-                best = minOf(best, steps)
+                return steps
             } else {
                 replacements
                     .flatMapTo(queue) { (from, to) ->
@@ -73,7 +61,7 @@ object Day19 {
             }
         }
 
-        return best
+        throw IllegalStateException("Could not find the solution :(")
     }
 
     private fun parseChemistry(input: List<String>): Chemistry {
