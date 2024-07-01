@@ -17,6 +17,9 @@ dependencies {
     testImplementation("com.google.truth:truth:1.1.5")
     testImplementation("io.kotest:kotest-runner-junit5:5.8.0")
     testImplementation("io.kotest:kotest-assertions-core:5.8.0")
+
+    implementation(platform("com.squareup.okhttp3:okhttp-bom:4.12.0"))
+    implementation("com.squareup.okhttp3:okhttp")
 }
 
 tasks {
