@@ -1,32 +1,46 @@
 package org.chalup.advent2017
 
 import org.chalup.utils.Vector3
+import kotlin.math.absoluteValue
 
 object Day20 {
-    // 705 too high
     fun task1(input: List<String>): Int {
-        val initialParticles = input.mapIndexed { index, s ->
-            """p=<(.*?),(.*?),(.*?)>, v=<(.*?),(.*?),(.*?)>, a=<(.*?),(.*?),(.*?)>""".toRegex()
-                .matchEntire(s)!!
-                .groupValues.drop(1)
-                .map { it.toLong() }
-                .chunked(3) { (x, y, z) -> Vector3(x, y, z) }
-                .let { (p, v, a) ->
-                    Particle(index, p, v, a)
-                }
-        }
-
-
-        return generateSequence(initialParticles) { it.map(Particle::simulate) }
+        return generateSequence(parseParticles(input)) { it.map(Particle::simulate) }
             .map { particles -> particles.sortedByDescending(Particle::distanceFromOrigin).map { it.index } }
-            // This doesn't look foolproof and probably is the reason why this crap doesn't work. Imagine
-            // two particles, one chasing the other along some axis with +/- 1 position change per tick.
-            .windowed(100)
+            .windowed(10)
             .takeWhile { it.toSet().size > 1 }
             .map { it.last() }
             .last()
-            .first()
+            .last()
     }
+
+    fun task2(input: List<String>): Int {
+        val simulation = generateSequence(parseParticles(input)) { particles ->
+            particles
+                .map(Particle::simulate)
+                .groupBy { it.position }
+                .flatMap { (_, group) -> group.takeIf { it.size == 1 }.orEmpty() }
+        }
+
+        return simulation
+            .map { particles -> particles.size }
+            .windowed(1000)
+            .takeWhile { it.toSet().size > 1 }
+            .map { it.last() }
+            .last()
+    }
+
+    private fun parseParticles(input: List<String>) = input.mapIndexed { index, s ->
+        """p=<(.*?),(.*?),(.*?)>, v=<(.*?),(.*?),(.*?)>, a=<(.*?),(.*?),(.*?)>""".toRegex()
+            .matchEntire(s)!!
+            .groupValues.drop(1)
+            .map { it.toLong() }
+            .chunked(3) { (x, y, z) -> Vector3(x, y, z) }
+            .let { (p, v, a) ->
+                Particle(index, p, v, a)
+            }
+    }
+
 
     data class Particle(
         val index: Int,
@@ -41,6 +55,6 @@ object Day20 {
             )
         }
 
-        fun distanceFromOrigin() = with(position) { x + y + z }
+        fun distanceFromOrigin() = with(position) { x.absoluteValue + y.absoluteValue + z.absoluteValue }
     }
 }
