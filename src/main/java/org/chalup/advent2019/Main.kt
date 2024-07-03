@@ -51,6 +51,7 @@ fun main(args: Array<String>) {
         advent(day = 20, part = 2) { input -> Day20.task2(input()) }
         advent(day = 22, part = 1) { input -> Day22.task1(input()) }
         // TODO: part 2 idea – track just the index of card 2020 with standard cycle detection
+        advent(day = 24, part = 1) { input -> Day24.task1(input()) }
     }
 
     println("=== TOTAL [${elapsedTotal}ms] ===")
