@@ -45,6 +45,7 @@ fun main(args: Array<String>) {
         advent(day = 14, part = 1) { input -> Day14.oreCostOfOneFuel(input()) }
         advent(day = 15, part = 1) { input -> Day15.task1(input().first()) }
         advent(day = 15, part = 2) { input -> Day15.task2(input().first()) }
+        advent(day = 16, part = 1) { input -> Day16.task1(input()) }
         advent(day = 18, part = 1) { input -> Day18.task1(input()) }
         advent(day = 18, part = 2) { input -> Day18.task2(input()) }
         advent(day = 20, part = 1) { input -> Day20.task1(input()) }
