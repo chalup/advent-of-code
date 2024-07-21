@@ -8,19 +8,27 @@ object Day16 {
         phases = 100
     )
 
-    fun task2(input: List<String>): String = fft(
-        initialSignal = input
-            .single()
-            .map { it.digitToInt() }
-            .let { signal ->
-                buildList {
-                    repeat(10000) {
-                        addAll(signal)
-                    }
-                }
-            },
-        phases = 100
-    )
+    fun task2(input: List<String>): String {
+        val resultIndex = input.single().take(7).toInt()
+        val signal = input.single().map(Char::digitToInt)
+
+        check(resultIndex * 2 > signal.size * 10_000)
+
+        val repeatedSignal = buildList {
+            repeat(10_000) { addAll(signal) }
+        }.drop(resultIndex).reversed()
+
+        val fftSequence = generateSequence(repeatedSignal) { prev ->
+            prev.runningReduce { acc, digit -> (acc + digit) % 10 }
+        }
+
+        return fftSequence
+            .drop(100)
+            .first()
+            .reversed()
+            .take(8)
+            .joinToString(separator = "")
+    }
 
     private fun fft(initialSignal: List<Int>, phases: Int): String {
         fun fftPattern(index: Int) = sequence<Int> {
@@ -43,7 +51,6 @@ object Day16 {
         }
 
         return fftSequence
-            .onEachIndexed { index, ints -> println("Phase $index, signalSize = ${ints.size}") }
             .drop(phases)
             .first()
             .take(8)
