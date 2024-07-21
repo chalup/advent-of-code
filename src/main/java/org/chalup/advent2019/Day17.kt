@@ -26,7 +26,7 @@ object Day17 {
         return intersections.sumOf { (x, y) -> x * y }
     }
 
-    fun task2(input: List<String>): Int {
+    fun task2(input: List<String>): Long {
         val output = IntcodeInterpreter.runProgram(input.single())
 
         val map = output
@@ -88,8 +88,73 @@ object Day17 {
             }
         }
 
-        println(route)
+        fun shortenSegment(segment: String) = buildString {
+            var forwardCount = 0
 
-        return 42
+            fun appendForwardSteps() {
+                if (forwardCount > 0) {
+                    append(forwardCount.toString())
+                    append(',')
+                    forwardCount = 0
+                }
+            }
+
+            segment.forEach {
+                when (it) {
+                    'F' -> forwardCount++
+                    else -> {
+                        appendForwardSteps()
+                        append(it)
+                        append(',')
+                    }
+                }
+            }
+
+            appendForwardSteps()
+        }.trim(',')
+
+        fun Char.isSimpleCommand() = when (this) {
+            'L', 'R', 'F' -> true
+            else -> false
+        }
+
+        fun possibleSegments(route: String) = (1..route.length)
+            .asSequence()
+            .map { route.trim { c -> !c.isSimpleCommand() }.take(it) }
+            .filter { segment -> segment.all { it.isSimpleCommand() } }
+            .takeWhile { shortenSegment(it).length <= 20 }
+            .toList()
+            .reversed()
+
+        possibleSegments(route).forEach { segmentA ->
+            val routeA = route.replace(segmentA, "A")
+
+            possibleSegments(routeA).forEach { segmentB ->
+                val routeAB = routeA.replace(segmentB, "B")
+
+                possibleSegments(routeAB).forEach { segmentC ->
+                    val routeABC = routeAB.replace(segmentC, "C")
+                    val mainProgram = routeABC.toList().joinToString(",")
+
+                    if (routeABC.all { it in 'A'..'C' } && mainProgram.length <= 20) {
+                        val fullProgram = buildString {
+                            appendLine(mainProgram)
+                            appendLine(shortenSegment(segmentA))
+                            appendLine(shortenSegment(segmentB))
+                            appendLine(shortenSegment(segmentC))
+                            appendLine("n")
+                        }.map { it.code.toLong() }
+
+                        return IntcodeInterpreter
+                            .runProgram(input.single(), fullProgram) {
+                                it.toMutableList().apply { set(0, 2) }
+                            }
+                            .last()
+                    }
+                }
+            }
+        }
+
+        throw IllegalStateException("Could not find the solution :(")
     }
 }

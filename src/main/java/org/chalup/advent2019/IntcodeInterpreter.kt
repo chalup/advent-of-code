@@ -159,8 +159,14 @@ class IntcodeInterpreter(memoryDump: Memory) {
     companion object {
         fun parseProgram(input: String) = input.split(",").map { it.toLong() }
 
-        fun runProgram(programInput: String, vararg inputs: Long): List<Long> {
-            val interpreter = IntcodeInterpreter(parseProgram(programInput)).apply { inputs.forEach { sendInput(it) } }
+        fun runProgram(programInput: String, input: Long) = runProgram(programInput, listOf(input))
+
+        fun runProgram(
+            programInput: String,
+            inputs: List<Long> = emptyList(),
+            transformProgram: (List<Long>) -> List<Long> = { it }
+        ): List<Long> {
+            val interpreter = IntcodeInterpreter(parseProgram(programInput).let(transformProgram)).apply { inputs.forEach { sendInput(it) } }
             val outputs = mutableListOf<Long>()
 
             while (true) {
