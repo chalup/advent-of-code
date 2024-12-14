@@ -2,6 +2,15 @@ package org.chalup.utils
 
 operator fun <T, U> Iterable<T>.times(other: Iterable<U>) = flatMap { t -> other.map { u -> t to u } }
 
+fun <T> Iterable<T>.uniquePairs() = this
+    .asSequence()
+    .flatMapIndexed { i, a ->
+        this
+            .asSequence()
+            .drop(i + 1)
+            .map { b -> a to b }
+    }
+
 inline fun <T, R : Comparable<R>> Iterable<T>.minMaxBy(selector: (T) -> R): Pair<R, R> {
     val iterator = iterator()
 

@@ -57,7 +57,9 @@ fun Vector.normalized() = gcd(abs(dx), abs(dy)).let { gcd -> Vector(dx / gcd, dy
 fun Vector.toAngle(): Double = atan2(dy.toDouble(), dx.toDouble())
 
 operator fun Point.plus(velocity: Vector) = with(velocity) { Point(x + dx, y + dy) }
+operator fun Point.minus(velocity: Vector) = with(velocity) { Point(x - dx, y - dy) }
 operator fun Vector.times(magnitude: Int) = copy(dx = dx * magnitude, dy = dy * magnitude)
+operator fun Vector.unaryMinus(): Vector = this * (-1)
 
 enum class Direction(val symbol: String, val vector: Vector) {
     U("U", Vector(0, -1)),
