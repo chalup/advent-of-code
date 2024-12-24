@@ -60,6 +60,7 @@ operator fun Point.plus(velocity: Vector) = with(velocity) { Point(x + dx, y + d
 operator fun Point.minus(velocity: Vector) = with(velocity) { Point(x - dx, y - dy) }
 operator fun Vector.times(magnitude: Int) = copy(dx = dx * magnitude, dy = dy * magnitude)
 operator fun Vector.unaryMinus(): Vector = this * (-1)
+operator fun Vector.plus(other: Vector) = Vector(this.dx + other.dx, this.dy + other.dy)
 
 enum class Direction(val symbol: String, val vector: Vector) {
     U("U", Vector(0, -1)),

@@ -12,7 +12,7 @@ fun main(args: Array<String>) {
 
     val httpClient = OkHttpClient()
 
-    for (year in 2015..2023) {
+    for (year in 2015..2024) {
         val yearDir = File(inputsDir, "$year").also { check((it.exists() && it.isDirectory) || it.mkdirs()) }
 
         for (day in 1..25) {

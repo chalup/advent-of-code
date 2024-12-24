@@ -11,6 +11,8 @@ fun main(args: Array<String>) {
     )
 
     val elapsedTotal = measureTimeMillis {
+        advent(day = 13, part = 1, Day13::task1)
+
         advent(day = 1, part = 1, Day1::task1)
         advent(day = 1, part = 2, Day1::task2)
         advent(day = 2, part = 1, Day2::task1)
@@ -32,6 +34,7 @@ fun main(args: Array<String>) {
         advent(day = 10, part = 1, Day10::task1)
         advent(day = 10, part = 2, Day10::task2)
         advent(day = 11, part = 1, Day11::task1)
+        advent(day = 13, part = 1, Day13::task1)
     }
 
     println("=== TOTAL [${elapsedTotal}ms] ===")
