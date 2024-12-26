@@ -11,6 +11,8 @@ fun main(args: Array<String>) {
     )
 
     val elapsedTotal = measureTimeMillis {
+        advent(day = 15, part = 1, Day15::task1)
+        return@measureTimeMillis
         advent(day = 1, part = 1, Day1::task1)
         advent(day = 1, part = 2, Day1::task2)
         advent(day = 2, part = 1, Day2::task1)
