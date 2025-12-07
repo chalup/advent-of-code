@@ -31,13 +31,9 @@ object Day5 {
                 listOf(this, other)
             }
 
-        // 193656338045937 too low
-        // 348548952146313
         return ranges
             .sortedBy { it.first }
             .fold(emptyList<LongRange>()) { mergedRanges, range ->
-                println("merging: $mergedRanges + $range")
-
                 mergedRanges
                     .lastOrNull()
                     ?.let { mergedRanges.dropLast(1) + (it mergeWith range) }
