@@ -36,4 +36,26 @@ object Day7 {
 
         return visitedSplitters.size
     }
+
+    fun task2(input: List<String>): Long {
+        return input
+            .drop(1)
+            .fold(mapOf(input.first().indexOf('S') to 1L)) { timelinesByX, line ->
+                timelinesByX
+                    .flatMap { (x, i) ->
+                        if (line[x] == '.') {
+                            sequenceOf(x to i)
+                        } else {
+                            sequenceOf(
+                                x - 1 to i,
+                                x + 1 to i,
+                            )
+                        }
+                    }
+                    .groupingBy { (x, _) -> x }
+                    .aggregate { _, acc, (_, count), _ -> (acc ?: 0) + count }
+            }
+            .values
+            .sum()
+    }
 }

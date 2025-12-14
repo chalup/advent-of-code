@@ -23,6 +23,7 @@ fun main(args: Array<String>) {
         advent(day = 6, part = 1, Day6::task1)
         advent(day = 6, part = 2, Day6::task2)
         advent(day = 7, part = 1, Day7::task1)
+        advent(day = 7, part = 2, Day7::task2)
         advent(day = 8, part = 1, Day8::task1)
         advent(day = 9, part = 1, Day9::task1)
         advent(day = 10, part = 1, Day10::task1)
