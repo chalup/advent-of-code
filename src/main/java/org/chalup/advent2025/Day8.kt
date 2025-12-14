@@ -53,6 +53,46 @@ object Day8 {
             .reduce(Long::times)
     }
 
+    fun task2(input: List<String>): Long {
+        val points = input.map { it.split(",").map(String::toLong).let { (x, y, z) -> Vector3(x, y, z) } }
+
+        val links = buildList {
+            points.forEachIndexed { i, p1 ->
+                points.forEachIndexed { j, p2 ->
+                    if (i < j) {
+                        add((i to j) to distanceSquared(p1, p2))
+                    }
+                }
+            }
+        }
+
+        var clusters = points.indices.associateWith { it }
+
+        links
+            .sortedBy { (_, distanceSquared) -> distanceSquared }
+            .forEach { (link, _) ->
+                val (p1, p2) = link
+                val c1 = clusters.getValue(p1)
+                val c2 = clusters.getValue(p2)
+
+                val targetCluster = minOf(c1, c2)
+
+                clusters = clusters
+                    .mapValues { (_, cluster) ->
+                        when (cluster) {
+                            c1, c2 -> targetCluster
+                            else -> cluster
+                        }
+                    }
+
+                if (clusters.values.distinct().size == 1) {
+                    return points[p1].x * points[p2].x
+                }
+            }
+
+        throw IllegalStateException("Could not connect all the clusters")
+    }
+
     private fun distanceSquared(p1: Vector3, p2: Vector3) =
         (p1.x - p2.x) * (p1.x - p2.x) +
         (p1.y - p2.y) * (p1.y - p2.y) +
